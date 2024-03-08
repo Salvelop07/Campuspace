@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "build": "npm i && npx tsc && cd client && npm i && npm run build",
     "dev": "nodemon server/index.ts",

@@ -7,6 +7,7 @@ interface TimeTableInterface extends mongoose.Document {
         allotedRoom: string;
         allotedTime: string;
         teacher: string;
+        paperId: number;
         subject: string;
     }[];
     createdAt: string,
@@ -29,7 +30,9 @@ const timeTableSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "user"
         },
-        subject: String
+        paperId: Number,
+        subject: String,
+        day: String
     }],
     timetableImage: {
         type: String,
