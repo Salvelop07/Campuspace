@@ -16,24 +16,16 @@ const addTimeTable = asyncHandler(
             throw new ApiError(401, "User not authorized")
         }
 
-        const { course, semester, classes } = req.body
-        if (!course.trim() || !semester.trim() || !classes.length || !classes[0].allotedRoom.trim() || !classes[0].allotedTime.trim() || !classes[0].teacher.trim() || !classes[0].subject.trim()) {
+        const { course, semester, classes, stream } = req.body
+        if (!course.trim() || !semester.trim() || !stream.trim() || !classes.length || !classes[0].allotedRoom.trim() || !classes[0].allotedTime.trim() || !classes[0].teacher.trim() || !classes[0].subject.trim()) {
             throw new ApiError(400, "Course, semester and classes are required")
         }
 
-
-        if (!req.file || !req.file.path) {
-            throw new ApiError(400, "Timetable image is required")
-        }
-
-        const timetableLocalPath = req.file.path
-        const timetableImage = await uploadToCloudinary(timetableLocalPath)
 
         const timetable = TimeTable.create({
             course,
             semester,
             classes,
-            timetableImage
         })
 
         if (!timetable) {

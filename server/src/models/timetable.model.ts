@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 interface TimeTableInterface extends mongoose.Document {
     course: string;
     semester: number;
+    stream: string;
     classes: {
         allotedRoom: string;
         allotedTime: string;
@@ -16,6 +17,10 @@ interface TimeTableInterface extends mongoose.Document {
 
 const timeTableSchema = new mongoose.Schema({
     course: {
+        type: String,
+        required: true
+    },
+    stream: {
         type: String,
         required: true
     },

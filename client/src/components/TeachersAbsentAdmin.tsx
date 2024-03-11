@@ -3,7 +3,6 @@ import React from "react"
 import { Button } from "./ui/button"
 import { CheckboxDemo } from "./CheckboxDemo"
 import data from "../../data2.json"
-import { useNavigate } from "react-router-dom"
 
 export interface TeacherInterface {
   id: string
@@ -16,7 +15,6 @@ function TeachersAbsentAdmin() {
   const [body, setBody] = React.useState<TeacherInterface[]>([])
   const [teachers, setTeachers] = React.useState<TeacherInterface[]>([])
   // let savedTeachers: TeacherInterface[] = [];
-  const navigate = useNavigate()
   // const searchRef = React.useRef<HTMLInputElement>(null)
 
   function handleChange(checked: boolean, teacherEmail: string) {
@@ -51,7 +49,7 @@ function TeachersAbsentAdmin() {
   return (
     <section className="min-h-screen min-w-screen">
     <form onSubmit={handleSubmit}>
-      <Card className="md:w-3/5 w-4/5 mx-auto dark:bg-zinc-900 bg-gray-300 mt-8">
+      <Card className="md:w-3/5 w-4/5 mx-auto dark:bg-card bg-zinc-100 my-8">
         <CardHeader>
           <CardTitle className="text-2xl">Teachers Absent</CardTitle>
         </CardHeader>
@@ -75,8 +73,7 @@ function TeachersAbsentAdmin() {
           </table>
         </CardContent>
         <CardFooter className="flex justify-between">
-          <Button variant="outline" type="reset" size="lg" onClick={() => navigate("/")}>Cancel</Button>
-          <Button type="submit" size="lg">Create</Button>
+          <Button type="submit" size="lg">Mark as Absent</Button>
         </CardFooter>
       </Card>
     </form >

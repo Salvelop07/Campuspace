@@ -11,6 +11,7 @@ import Timetable from './components/Timetable'
 import TeacherRegister from "./components/TeacherRegister"
 import Footer from "./components/Footer"
 import { useEffect } from "react"
+import AddRoom from "./components/AddRoom"
 
 function App() {
   useEffect(() => {
@@ -24,6 +25,7 @@ function App() {
         <Route element={<TimetableAdmin />} path="/admin/timetable" />
         <Route element={<TeachersAbsentAdmin />} path="/admin/teachersabsent" />
         <Route element={<TeacherRegister />} path="/admin/register" />
+        <Route element={<AddRoom />} path="/admin/addroom" />
 
         <Route element={<Timetable />} path="/timetable" />
         <Route element={<VacantRooms />} path="/" />

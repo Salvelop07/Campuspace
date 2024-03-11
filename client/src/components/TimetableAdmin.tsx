@@ -106,7 +106,7 @@ function TimetableAdmin() {
   return (
     <section className="min-h-screen min-w-screen">
       <form onSubmit={handleSubmit}>
-        <Card className="w-4/5 mx-auto dark:bg-zinc-900 bg-gray-300 mt-10">
+        <Card className="w-4/5 mx-auto dark:bg-card bg-zinc-100 mt-10">
           <CardHeader>
             <CardTitle className="text-2xl">Timetable</CardTitle>
           </CardHeader>
@@ -335,7 +335,7 @@ function TimetableAdmin() {
               variant="outline"
               type="reset"
               size="lg"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/admin/teachersabsent")}
             >
               Cancel
             </Button>

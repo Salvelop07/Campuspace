@@ -22,7 +22,7 @@ const generateAccessToken = async (userId: string) => {
 
 const registerUser = asyncHandler(
     async (req: Request, res: Response) => {
-        const { fullName, email, password, isAdmin } = req.body
+        const { fullName, email, password } = req.body
         if (!fullName.trim() || !email.trim() || !password.trim()) {
             throw new ApiError(400, "All fields are required")
         }

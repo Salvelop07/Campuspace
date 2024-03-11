@@ -14,7 +14,7 @@ function TeacherRegister() {
   })
   return (
     <section className="min-h-screen min-w-screen">
-    <Card className="lg:w-2/5 sm:w-3/5 w-4/5 mx-auto dark:bg-zinc-900 bg-gray-300 mt-8">
+    <Card className="lg:w-2/5 sm:w-3/5 w-4/5 mx-auto dark:bg-card bg-zinc-100 mt-8">
       <CardHeader>
         <CardTitle className="text-2xl text-center">Register teacher</CardTitle>
       </CardHeader>
@@ -54,7 +54,7 @@ function TeacherRegister() {
       </CardContent>
       <CardFooter className="flex justify-evenly">
         <Button type="submit" size="lg">Register</Button>
-        <Button variant="outline" type="reset" size="lg" onClick={() => navigate("/")}>Cancel</Button>
+        <Button variant="outline" type="reset" size="lg" onClick={() => navigate("/admin/teachersabsent")}>Cancel</Button>
       </CardFooter>
     </Card>
     </section>
