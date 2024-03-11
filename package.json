@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "build": "npm i && npx tsc && cd client && npm i && npm run build",
+    "build": "npm i --include=dev && npx tsc && cd client && npm i --include=dev && npm run build",
     "dev": "nodemon server/index.ts",
     "start": "node --env-file=.env dist/index.js"
   },

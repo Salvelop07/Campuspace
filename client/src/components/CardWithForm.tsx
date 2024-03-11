@@ -9,7 +9,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ChangeEventHandler, FormEventHandler, MouseEventHandler } from "react"
-import { ClassInterface } from "./Timetable"
+import { ClassInterface } from "./TimetableAdmin"
 import {
   Select,
   SelectContent,
@@ -38,8 +38,39 @@ export function CardWithForm(
               <Input id="course" placeholder="Course" name="course" value={course} onChange={handleChange} />
             </div>
             <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="course" className="flex flex-start mx-2 text-lg">Course</Label>
+              <Input id="course" placeholder="Course" name="course" value={semester} onChange={handleChange} />
+            </div>
+            <div className="flex flex-col space-y-1.5">
               <Label htmlFor="semester" className="flex flex-start mx-2 text-lg">Semester</Label>
-              <Input id="semester" placeholder="Semester" name="semester" value={semester} onChange={handleChange} />
+              <Select>
+                <SelectTrigger id="semester">
+                  <SelectValue placeholder="Semester" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">I</SelectItem>
+                  <SelectItem value="2">II</SelectItem>
+                  <SelectItem value="3">III</SelectItem>
+                  <SelectItem value="4">IV</SelectItem>
+                  <SelectItem value="5">V</SelectItem>
+                  <SelectItem value="6">VI</SelectItem>
+                  <SelectItem value="7">VII</SelectItem>
+                  <SelectItem value="8">VIII</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="stream" className="flex flex-start mx-2 text-lg">Stream</Label>
+              <Select>
+                <SelectTrigger id="stream">
+                  <SelectValue placeholder="Stream" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="arts">Arts</SelectItem>
+                  <SelectItem value="science">Science</SelectItem>
+                  <SelectItem value="commerce">Commerce</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <table>
               <tbody>
@@ -83,7 +114,7 @@ export function CardWithForm(
                     </tr>
                   )
                 })}
-                <tr className="flex flex-start mt-2">
+                <tr className="flex flex-start mt-2 gap-2">
                   <td><Button variant="secondary" onClick={IncreaseClasses} type="button">Add more</Button></td>
                   <td><Button variant="destructive" onClick={DecreaseClasses} type="button" disabled={classes.length === 1}>Remove</Button></td>
                 </tr>
