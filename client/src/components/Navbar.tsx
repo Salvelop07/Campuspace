@@ -1,86 +1,126 @@
-// import * as React from "react"
-// import { cn } from "@/lib/utils"
-// import {
-//   NavigationMenu,
-//   NavigationMenuItem,
-//   NavigationMenuLink,
-//   NavigationMenuList,
-// } from "@/components/ui/navigation-menu"
-// import { Link } from "react-router-dom"
+import { Button } from "./ui/button";
+import logo from "../assets/logo.svg";
+import { ModeToggle } from "./ModeToggle";
+import { Link, useNavigate } from "react-router-dom";
+import { Equal, X } from "lucide-react";
+import React from "react";
 
-// export default function Navbar() {
-//   const components: { title: string; href: string; description: string }[] = [
-//     {
-//       title: "Alert Dialog",
-//       href: "/docs/primitives/alert-dialog",
-//       description:
-//         "A modal dialog that interrupts the user with important content and expects a response.",
-//     },
-//     {
-//       title: "Hover Card",
-//       href: "/docs/primitives/hover-card",
-//       description:
-//         "For sighted users to preview content available behind a link.",
-//     },
-//     {
-//       title: "Progress",
-//       href: "/docs/primitives/progress",
-//       description:
-//         "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-//     },
-//     {
-//       title: "Scroll-area",
-//       href: "/docs/primitives/scroll-area",
-//       description: "Visually or semantically separates content.",
-//     },
-//     {
-//       title: "Tabs",
-//       href: "/docs/primitives/tabs",
-//       description:
-//         "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-//     },
-//     {
-//       title: "Tooltip",
-//       href: "/docs/primitives/tooltip",
-//       description:
-//         "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-//     },
-//   ]
-//   return (
-//     <NavigationMenu className="h-20 w-screen">
-//       <NavigationMenuList>
-//         <NavigationMenuItem>
-//           <Link to="/">
-//             Home
-//           </Link>
-//         </NavigationMenuItem>
-//       </NavigationMenuList>
-//     </NavigationMenu>
-//   )
-// }
+function Navbar() {
+  const [openNav, setOpenNav] = React.useState(false);
+  const navigate = useNavigate();
+  return (
+    <>
+      <nav className="flex flex-row justify-between items-center px-4 h-16 relative z-20 border-b-2 border-gray-300 dark:border-gray-600 bg-zinc-200 dark:bg-zinc-800">
+        <span className="flex gap-4 items-center">
+          <Button
+            size="icon"
+            variant="secondary"
+            className="md:hidden dark:bg-zinc-900 ring-1 dark:ring-zinc-600 ring-zinc-100"
+            onClick={() => setOpenNav(!openNav)}
+          >
+            {openNav ? <X /> : <Equal />}
+          </Button>
+          <Link to="/" className="flex flex-row gap-2 items-center">
+            <img src={logo} alt="" className="w-10 object-contain" />
+            <span>ARSD College</span>
+          </Link>
+        </span>
+        <ul className="relative top-0 right-0 flex gap-2">
+          <li>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/")}
+              className="hidden md:flex dark:hover:bg-zinc-900"
+            >
+              Vacant Rooms
+            </Button>
+          </li>
+          <li>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/timetable")}
+              className="hidden md:flex dark:hover:bg-zinc-900"
+            >
+              Timetable
+            </Button>
+          </li>
+          <li>
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/teachersabsent")}
+              className="hidden md:flex dark:hover:bg-zinc-900"
+            >
+              Teachers Absent
+            </Button>
+          </li>
+          <li>
+            <Button
+              onClick={() => navigate("/login")}
+              className="hidden md:flex "
+            >
+              Login
+            </Button>
+          </li>
+          <li>
+            <ModeToggle />
+          </li>
+        </ul>
+      </nav>
+      <ul
+        className={`flex flex-col absolute transition-transform duration-300 z-10 border-b-2 border-gray-300 dark:border-gray-700 w-full " 
+      ${openNav ? "-translate-y-0" : "-translate-y-64"}`}
+      >
+        <li>
+          <Button
+            variant="outline"
+            onClick={() => {
+              navigate("/");
+              setOpenNav(!openNav);
+            }}
+            className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"
+          >
+            Vacant Rooms
+          </Button>
+        </li>
+        <li>
+          <Button
+            variant="outline"
+            onClick={() => {
+              navigate("/timetable");
+              setOpenNav(!openNav);
+            }}
+            className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"
+          >
+            Timetable
+          </Button>
+        </li>
+        <li>
+          <Button
+            variant="outline"
+            onClick={() => {
+              navigate("/teachersabsent");
+              setOpenNav(!openNav);
+            }}
+            className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"
+          >
+            Teachers Absent
+          </Button>
+        </li>
+        <li>
+          <Button
+            variant="outline"
+            onClick={() => {
+              navigate("/login");
+              setOpenNav(!openNav);
+            }}
+            className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"
+          >
+            Login
+          </Button>
+        </li>
+      </ul>
+    </>
+  );
+}
 
-// const ListItem = React.forwardRef<
-//   React.ElementRef<"a">,
-//   React.ComponentPropsWithoutRef<"a">
-// >(({ className, title, children, ...props }, ref) => {
-//   return (
-//     <li>
-//       <NavigationMenuLink asChild>
-//         <a
-//           ref={ref}
-//           className={cn(
-//             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-//             className
-//           )}
-//           {...props}
-//         >
-//           <div className="text-sm font-medium leading-none">{title}</div>
-//           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-//             {children}
-//           </p>
-//         </a>
-//       </NavigationMenuLink>
-//     </li>
-//   )
-// })
-// ListItem.displayName = "ListItem"
+export default Navbar;

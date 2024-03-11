@@ -49,6 +49,7 @@ function TeachersAbsentAdmin() {
     // savedTeachers = data
   })
   return (
+    <section className="min-h-screen min-w-screen">
     <form onSubmit={handleSubmit}>
       <Card className="md:w-3/5 w-4/5 mx-auto dark:bg-zinc-900 bg-gray-300 mt-8">
         <CardHeader>
@@ -79,6 +80,7 @@ function TeachersAbsentAdmin() {
         </CardFooter>
       </Card>
     </form >
+    </section>
   )
 }
 

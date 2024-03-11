@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -18,12 +17,11 @@ export interface RoomInterface {
   location: string,
 }
 
-export function TableDemo() {
+export function VacantRooms() {
   return (
     <>
     <h1 className="text-3xl text-center my-6">Vacant rooms</h1>
     <Table className="mx-auto md:w-3/5 w-4/5">
-      <TableCaption>Rooms vacant in the college for extra classes.</TableCaption>
       <TableHeader>
         <TableRow>
           <TableHead>Room Number</TableHead>
