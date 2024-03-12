@@ -1,15 +1,22 @@
 import { Router } from "express";
-import { becomeAdmin, loginUser, registerUser } from "../controllers/user.controller";
+import {
+  becomeAdmin,
+  deleteTeacher,
+  loginUser,
+  registerUser,
+} from "../controllers/user.controller";
 import verifyJWT from "../middlewares/auth.middleware";
 
-const router = Router()
+const router = Router();
 
+router.use(verifyJWT);
 
-router.route("/register").post(registerUser)
+router.route("/register").post(registerUser);
 
-router.route("/login").post(loginUser)
+router.route("/login").post(loginUser);
 
-router.route("/admin").patch(verifyJWT, becomeAdmin)
+router.route("/admin/:teacherId").patch(becomeAdmin);
 
+router.route("/delete/:teacherId").delete(deleteTeacher);
 
-export default router
+export default router;

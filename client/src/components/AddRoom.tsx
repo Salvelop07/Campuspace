@@ -38,6 +38,20 @@ function AddRoom() {
     if (!index) return console.log("Index not found");
   }
   const navigate = useNavigate();
+  React.useEffect(() => {
+    setRooms([
+      {
+        roomNumber: "room 1",
+        capacity: "100",
+        location: "Ground floor",
+      },
+      {
+        roomNumber: "room 1",
+        capacity: "100",
+        location: "Ground floor",
+      },
+    ]);
+  });
   return (
     <section className="min-h-screen min-w-screen">
       <form>
@@ -148,17 +162,17 @@ function AddRoom() {
             <TableHead>Sitting Capacity</TableHead>
           </TableRow>
         </TableHeader>
-          <TableBody>
-            {rooms.map((room, index) => {
-              return (
-                <TableRow key={index}>
-                  <TableCell>{room.roomNumber}</TableCell>
-                  <TableCell>{room.capacity}</TableCell>
-                  <TableCell>{room.location}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
+        <TableBody>
+          {rooms.map((room, index) => {
+            return (
+              <TableRow key={index}>
+                <TableCell>{room.roomNumber}</TableCell>
+                <TableCell>{room.capacity}</TableCell>
+                <TableCell>{room.location}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
       </Table>
     </section>
   );

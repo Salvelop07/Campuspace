@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const connectDB = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const connectionInstance = yield mongoose_1.default.connect(process.env.MONGODB_URI);
+        const connectionInstance = yield mongoose_1.default.connect(`${process.env.MONGODB_URI}/arsdcollege`);
         console.log("MongoDb Connected:", connectionInstance.connection.host);
     }
     catch (err) {

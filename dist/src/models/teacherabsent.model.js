@@ -10,10 +10,6 @@ const teacherAbsentSchema = new mongoose_1.default.Schema({
             type: mongoose_1.default.Schema.Types.ObjectId,
             ref: "user"
         }],
-    rooms: [{
-            type: mongoose_1.default.Schema.Types.ObjectId,
-            ref: "room"
-        }],
     day: {
         type: String,
         required: true,

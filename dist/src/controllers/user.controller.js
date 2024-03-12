@@ -28,7 +28,7 @@ const generateAccessToken = (userId) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 const registerUser = (0, asyncHandler_1.asyncHandler)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fullName, email, password, isAdmin } = req.body;
+    const { fullName, email, password } = req.body;
     if (!fullName.trim() || !email.trim() || !password.trim()) {
         throw new ApiError_1.ApiError(400, "All fields are required");
     }

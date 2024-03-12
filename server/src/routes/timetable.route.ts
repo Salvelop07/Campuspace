@@ -1,7 +1,16 @@
 import { Router } from "express";
+import verifyJWT from "../middlewares/auth.middleware";
+import {
+  addTimetable,
+  deleteTimetable,
+} from "../controllers/timetable.controller";
 
-const router = Router()
+const router = Router();
 
-// router.route("/").post()
+router.use(verifyJWT);
 
-export default router
+router.route("/new").post(addTimetable);
+
+router.route("/delete/:timetableId").delete(deleteTimetable);
+
+export default router;

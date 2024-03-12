@@ -1,31 +1,33 @@
 import mongoose from "mongoose";
 
 interface TeacherAbsentInterface extends mongoose.Document {
-    teachers: string[],
-    rooms: string[],
-    day: string,
-    createdAt: string,
-    updatedAt: string
+  teachers: string[];
+  day: string;
 }
 
-const teacherAbsentSchema = new mongoose.Schema({
-    teachers: [{
+const teacherAbsentSchema = new mongoose.Schema(
+  {
+    teachers: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user"
-    }],
+        ref: "user",
+      },
+    ],
     day: {
-        type: String,
-        required: true,
-        trim: true
-    }
-},{
+      type: String,
+      required: true,
+      trim: true,
+    },
+  },
+  {
     timestamps: true,
-    expireAfterSeconds: 86400
-})
+    expireAfterSeconds: 86400,
+  }
+);
 
-const TeacherAbsent = mongoose.model<TeacherAbsentInterface>("teacherabsent", teacherAbsentSchema)
+const TeacherAbsent = mongoose.model<TeacherAbsentInterface>(
+  "teacherabsent",
+  teacherAbsentSchema
+);
 
-export {
-    TeacherAbsentInterface,
-    TeacherAbsent
-}
+export { TeacherAbsentInterface, TeacherAbsent };

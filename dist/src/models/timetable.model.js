@@ -10,6 +10,10 @@ const timeTableSchema = new mongoose_1.default.Schema({
         type: String,
         required: true
     },
+    stream: {
+        type: String,
+        required: true
+    },
     semester: {
         type: Number,
         required: true
