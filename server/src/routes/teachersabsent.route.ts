@@ -1,14 +1,14 @@
 import { Router } from "express";
 import {
-  addTeachers,
+  addTeachersAbsent,
   getTeachersAbsent,
 } from "../controllers/teachersabsent.controller";
 import verifyJWT from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.route("/new").post(verifyJWT, addTeachers);
-
 router.route("/").get(getTeachersAbsent);
+
+router.route("/new").post(verifyJWT, addTeachersAbsent);
 
 export default router;

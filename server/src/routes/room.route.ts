@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { addRooms, deleteRoom } from "../controllers/room.controller";
+import { addRooms, deleteRoom, getRooms } from "../controllers/room.controller";
 import verifyJWT from "../middlewares/auth.middleware";
 import { bookRoom } from "../controllers/bookroom.controller";
 
 const router = Router();
 
 router.use(verifyJWT);
+
+router.route("/").get(getRooms);
 
 router.route("/new").post(addRooms);
 

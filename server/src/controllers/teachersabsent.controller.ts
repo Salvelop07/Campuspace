@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError";
 import { TeacherAbsent } from "../models/teacherabsent.model";
 import { ApiResponse } from "../utils/ApiResponse";
 
-const addTeachers = asyncHandler(async (req: Request, res: Response) => {
+const addTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
     throw new ApiError(401, "User not verified");
   }
@@ -15,7 +15,7 @@ const addTeachers = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { teachers, day } = req.body;
-  if (!teachers || !teachers.length || !day.trim()) {
+  if (!teachers || !teachers.length || !day) {
     throw new ApiError(400, "Teachers and day are required");
   }
 
@@ -35,6 +35,10 @@ const addTeachers = asyncHandler(async (req: Request, res: Response) => {
 const getTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
   const { day } = req.query;
 
+  if(!day) {
+    throw new ApiError(400, "Day is required")
+  }
+
   const teachersAbsent = await TeacherAbsent.find({ day }).populate({
     path: "user",
     select: "fullName email",
@@ -51,4 +55,4 @@ const getTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, teachersAbsent, "Teachers absent found"));
 });
 
-export { addTeachers, getTeachersAbsent };
+export { addTeachersAbsent, getTeachersAbsent };

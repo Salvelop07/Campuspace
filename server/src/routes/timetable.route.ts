@@ -3,14 +3,18 @@ import verifyJWT from "../middlewares/auth.middleware";
 import {
   addTimetable,
   deleteTimetable,
+  getCourses,
+  getTimetable,
 } from "../controllers/timetable.controller";
 
 const router = Router();
 
-router.use(verifyJWT);
+router.route("/courses").get(getCourses);
 
-router.route("/new").post(addTimetable);
+router.route("/").get(getTimetable);
 
-router.route("/delete/:timetableId").delete(deleteTimetable);
+router.route("/new").post(verifyJWT, addTimetable);
+
+router.route("/delete/:timetableId").delete(verifyJWT, deleteTimetable);
 
 export default router;

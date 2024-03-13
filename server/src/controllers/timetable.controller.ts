@@ -16,15 +16,16 @@ const addTimetable = asyncHandler(async (req: Request, res: Response) => {
 
   const { course, semester, classes, stream } = req.body;
   if (
-    !course.trim() ||
-    !semester.trim() ||
-    !stream.trim() ||
+    !course ||
+    !semester ||
+    !stream ||
     !classes ||
     !classes.length ||
-    !classes[0].allotedRoom.trim() ||
-    !classes[0].allotedTime.trim() ||
-    !classes[0].teacher.trim() ||
-    !classes[0].subject.trim()
+    !classes[0].allotedRoom ||
+    !classes[0].allotedTime ||
+    !classes[0].teacher ||
+    !classes[0].subject || 
+    !classes[0].paperId
   ) {
     throw new ApiError(
       400,
@@ -39,7 +40,7 @@ const addTimetable = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!timetable) {
-    throw new ApiError(500, "Something went wrong, while creating timetable");
+    throw new ApiError(400, "Something went wrong, while creating timetable");
   }
 
   return res
@@ -67,4 +68,45 @@ const deleteTimetable = asyncHandler(async (req: Request, res: Response) => {
   return res.status(200).json(new ApiResponse(200, {}, "Timetable deleted"));
 });
 
-export { addTimetable, deleteTimetable };
+const getCourses = asyncHandler(async (req: Request, res: Response) => {
+  const { stream } = req.query;
+  if (!stream) {
+    throw new ApiError(400, "Stream is required");
+  }
+
+  const courses = await TimeTable.find({ stream }).distinct("course");
+
+  if (!courses || !courses.length) {
+    throw new ApiError(404, "Courses not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, courses, "Courses found"));
+});
+
+const getTimetable = asyncHandler(async (req: Request, res: Response) => {
+  const { course, semester, stream } = req.query;
+  if (!course || !semester || !stream) {
+    throw new ApiError(400, "Course, semester and stream are required");
+  }
+
+  const timetable = await TimeTable.findOne({
+    course,
+    semester,
+    stream,
+  }).populate({
+    path: "classes.teacher",
+    select: "fullName",
+    model: "user",
+    strictPopulate: false,
+  });
+
+  if (!timetable) {
+    throw new ApiError(404, "Timetable not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, timetable, "Timetable found"));
+});
+
+export { addTimetable, deleteTimetable, getCourses, getTimetable };

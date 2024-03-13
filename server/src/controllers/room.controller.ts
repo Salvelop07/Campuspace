@@ -15,6 +15,15 @@ const getRooms = asyncHandler(async (_: Request, res: Response) => {
     .json(new ApiResponse(200, rooms, "Rooms were retrieved successfully"));
 });
 
+// const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
+//   const {day} = req.query
+//   if (!day) {
+//     throw new ApiError(400, "Day is required");
+//   }
+
+//   const rooms = await Room.find();
+// })
+
 const addRooms = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
     throw new ApiError(401, "User not verified");
@@ -29,14 +38,23 @@ const addRooms = asyncHandler(async (req: Request, res: Response) => {
   if (
     !rooms ||
     !rooms.length ||
-    !rooms[0].roomNumber.trim() ||
-    !rooms[0].capacity.trim() ||
-    !rooms[0].location.trim()
+    !rooms[0].roomNumber ||
+    !rooms[0].capacity ||
+    !rooms[0].location
   ) {
     throw new ApiError(400, "Rooms required");
   }
+  const roomNumbers = rooms.map(
+    (room: { roomNumber: string; capacity: number; location: string }) =>
+      room.roomNumber
+  );
 
-  const createRooms = await Room.bulkSave(rooms);
+  const roomExists = await Room.findOne({ roomNumber: { $in: roomNumbers } });
+  if (roomExists) {
+    throw new ApiError(400, "Some room already exists with same room number");
+  }
+
+  const createRooms = await Room.create(rooms);
   if (!createRooms) {
     throw new ApiError(400, "Rooms not created");
   }

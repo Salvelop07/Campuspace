@@ -13,6 +13,7 @@ const roomSchema = new mongoose.Schema(
     roomNumber: {
       type: String,
       required: true,
+      unique: true,
     },
     capacity: {
       type: Number,

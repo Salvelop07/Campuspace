@@ -30,7 +30,10 @@ const timeTableSchema = new mongoose.Schema({
   },
   classes: [
     {
-      allotedRoom: String,
+      allotedRoom: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "room",
+      },
       allotedTime: String,
       teacher: {
         type: mongoose.Schema.Types.ObjectId,
@@ -40,11 +43,7 @@ const timeTableSchema = new mongoose.Schema({
       subject: String,
       day: String,
     },
-  ],
-  timetableImage: {
-    type: String,
-    required: true,
-  },
+  ]
 });
 
 const TimeTable = mongoose.model("TimeTable", timeTableSchema);

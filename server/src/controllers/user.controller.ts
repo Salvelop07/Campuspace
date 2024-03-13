@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
-import { User } from "../models/user.model";
+import { User, UserInterface } from "../models/user.model";
 import { ApiResponse } from "../utils/ApiResponse";
 
 const generateAccessToken = async (userId: string) => {
@@ -23,7 +23,7 @@ const generateAccessToken = async (userId: string) => {
 };
 
 const getTeachers = asyncHandler(async (req: Request, res: Response) => {
-  const teachers = await User.find({ isAdmin: false });
+  const teachers = await User.find({ isAdmin: false }).select("-password");
   if (!teachers || !teachers.length) {
     throw new ApiError(404, "Teachers not found");
   }
@@ -42,7 +42,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { fullName, email, password } = req.body;
-  if (!fullName.trim() || !email.trim() || !password.trim()) {
+  if (!fullName || !email || !password) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -61,6 +61,8 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Something went wrong, while registering the user");
   }
 
+  user.password = "";
+
   const accessToken = await generateAccessToken(user._id.toString());
 
   return res
@@ -76,7 +78,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
 const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  if (!email.trim() || !password.trim()) {
+  if (!email || !password) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -92,6 +94,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Invalid email or password");
   }
 
+  user.password = "";
   const accessToken = await generateAccessToken(user._id.toString());
 
   return res
