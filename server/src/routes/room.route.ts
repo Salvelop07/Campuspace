@@ -5,13 +5,13 @@ import { bookRoom } from "../controllers/bookroom.controller";
 
 const router = Router();
 
-router.use(verifyJWT);
-
 router.route("/").get(getRooms);
+
+router.use(verifyJWT);
 
 router.route("/new").post(addRooms);
 
-router.route("/book").post(bookRoom);
+router.route("/book/:roomId").post(bookRoom);
 
 router.route("/delete/:roomId").delete(deleteRoom);
 

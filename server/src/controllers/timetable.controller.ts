@@ -25,18 +25,20 @@ const addTimetable = asyncHandler(async (req: Request, res: Response) => {
     !classes[0].allotedTime ||
     !classes[0].teacher ||
     !classes[0].subject || 
-    !classes[0].paperId
+    !classes[0].paperId || 
+    !classes[0].day
   ) {
     throw new ApiError(
       400,
-      "Course, semester, stream and classes are required"
+      "All fields are required"
     );
   }
 
-  const timetable = TimeTable.create({
+  const timetable = await TimeTable.create({
     course,
     semester,
     classes,
+    stream
   });
 
   if (!timetable) {

@@ -15,14 +15,28 @@ const getRooms = asyncHandler(async (_: Request, res: Response) => {
     .json(new ApiResponse(200, rooms, "Rooms were retrieved successfully"));
 });
 
-// const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
-//   const {day} = req.query
-//   if (!day) {
-//     throw new ApiError(400, "Day is required");
-//   }
+const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
+  const { day, time } = req.query;
+  if (!day || !time) {
+    throw new ApiError(400, "Day is required");
+  }
 
-//   const rooms = await Room.find();
-// })
+  const rooms = await Room.aggregate([
+    {
+      $lookup: {
+        from: "occupiedrooms",
+        localField: "_id",
+        foreignField: "room",
+        as: "occupied",
+      },
+    },
+    {
+      $match: {
+        "occupied.day": day,
+      },
+    },
+  ]);
+});
 
 const addRooms = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {

@@ -10,6 +10,7 @@ interface TimeTableInterface extends mongoose.Document {
     teacher: string;
     paperId: number;
     subject: string;
+    day: string;
   }[];
   createdAt: string;
   updatedAt: string;

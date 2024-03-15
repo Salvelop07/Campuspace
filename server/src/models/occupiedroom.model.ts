@@ -23,6 +23,6 @@ const roomOccupiedSchema = new mongoose.Schema(
 );
 
 export const RoomOccupied = mongoose.model<RoomOccupiedInterface>(
-  "roomoccupied",
+  "occupiedroom",
   roomOccupiedSchema
 );

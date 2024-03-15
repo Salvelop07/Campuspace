@@ -12,9 +12,9 @@ const router = Router();
 
 router.route("/").get(getTeachers);
 
-router.route("/register").post(verifyJWT, registerUser);
-
 router.route("/login").post(loginUser);
+
+router.route("/register").post(verifyJWT, registerUser);
 
 router.route("/admin/:teacherId").patch(verifyJWT, becomeAdmin);
 
