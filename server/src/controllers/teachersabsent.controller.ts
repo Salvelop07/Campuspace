@@ -10,7 +10,7 @@ const addTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { isAdmin } = req.user;
-  if (isAdmin) {
+  if (!isAdmin) {
     throw new ApiError(403, "User not authorized");
   }
 
@@ -19,10 +19,11 @@ const addTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Teachers and day are required");
   }
 
-  const teacherAbsent = await TeacherAbsent.create({
-    teachers,
-    day,
+  const teacherData = teachers.map((teacher: string[]) => {
+    return { teacher, day };
   });
+  
+  const teacherAbsent = await TeacherAbsent.create(teacherData);
   if (!teacherAbsent) {
     throw new ApiError(400, "Teachers absent not added");
   }
@@ -35,8 +36,8 @@ const addTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
 const getTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
   const { day } = req.query;
 
-  if(!day) {
-    throw new ApiError(400, "Day is required")
+  if (!day) {
+    throw new ApiError(400, "Day is required");
   }
 
   const teachersAbsent = await TeacherAbsent.find({ day }).populate({
@@ -47,12 +48,12 @@ const getTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
   });
 
   if (!teachersAbsent || !teachersAbsent.length) {
-    throw new ApiError(404, "Teachers absent not found");
+    throw new ApiError(404, "No absent teachers found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, teachersAbsent, "Teachers absent found"));
+    .json(new ApiResponse(200, teachersAbsent, "Absent teachers found"));
 });
 
 export { addTeachersAbsent, getTeachersAbsent };
