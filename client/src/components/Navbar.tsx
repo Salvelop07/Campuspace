@@ -118,7 +118,7 @@ function Navbar() {
                 navigate("/");
                 localStorage.removeItem("arsd-college-accessToken");
               }}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex"
             >
               Logout
             </Button>

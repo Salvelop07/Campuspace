@@ -38,7 +38,7 @@ function Timetable() {
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="stream">Select Stream</Label>
-                <Select>
+                <Select name="stream">
                   <SelectTrigger id="stream">
                     <SelectValue placeholder="Stream" />
                   </SelectTrigger>
@@ -51,7 +51,7 @@ function Timetable() {
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="course">Select Course</Label>
-                <Select>
+                <Select name="course">
                   <SelectTrigger id="course">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -66,7 +66,7 @@ function Timetable() {
                 <Label htmlFor="semester" className="flex flex-start">
                   Semester
                 </Label>
-                <Select>
+                <Select name="semester">
                   <SelectTrigger id="semester">
                     <SelectValue placeholder="Semester" />
                   </SelectTrigger>

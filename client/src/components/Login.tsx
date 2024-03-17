@@ -10,46 +10,33 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import { useUser } from "@/context/UserProvider";
-import { RotateCw } from "lucide-react";
 
 function Login() {
-  const {  loading } = useUser();
+  const { loginUser, loading, user } = useUser();
   const navigate = useNavigate();
   const [creds, setCreds] = React.useState({ email: "", password: "" });
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  React.useEffect(() => {
+    if (user._id) {
+      navigate("/admin/teachersabsent");
+    }
+  }, [])
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // loginUser(creds.email, creds.password);
+    await loginUser(creds.email, creds.password);
+    navigate("/admin/teachersabsent")
   }
 
   return (
     <section className="min-h-screen min-w-screen">
-      <Card className="lg:w-2/5 sm:w-3/5 w-4/5 mx-auto dark:bg-card bg-zinc-100 mt-8">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">Login</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="space-y-1">
-              <Label htmlFor="user">Designation</Label>
-              <Select>
-                <SelectTrigger id="user">
-                  <SelectValue placeholder="Designation" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="teacher">Teacher</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <Card className="lg:w-2/5 sm:w-3/5 w-4/5 mx-auto dark:bg-card bg-zinc-100 mt-8">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Login</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -57,6 +44,7 @@ function Login() {
                 placeholder="Email"
                 type="email"
                 value={creds.email}
+                autoComplete="email"
                 onChange={(e) => setCreds({ ...creds, email: e.target.value })}
               />
             </div>
@@ -72,28 +60,29 @@ function Login() {
                 }
               />
             </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-evenly">
-          <Button
-            type="submit"
-            size="lg"
-            disabled={loading}
-            onClick={() => navigate("/admin/teachersabsent")}
-          >
-            <RotateCw className={`${loading ? "": "hidden"}`} />
-            Login
-          </Button>
-          <Button
-            variant="outline"
-            type="reset"
-            size="lg"
-            onClick={() => navigate("/")}
-          >
-            Cancel
-          </Button>
-        </CardFooter>
-      </Card>
+          </CardContent>
+          <CardFooter className="flex justify-evenly">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={
+                loading || creds.email.length < 5 || creds.password.length < 6
+              }
+            >
+              Login
+            </Button>
+            <Button
+              variant="outline"
+              type="reset"
+              size="lg"
+              disabled={loading}
+              onClick={() => navigate("/")}
+            >
+              Cancel
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
     </section>
   );
 }

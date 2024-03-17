@@ -12,6 +12,7 @@ import TeacherRegister from "./components/TeacherRegister"
 import Footer from "./components/Footer"
 import { useEffect } from "react"
 import AddRoom from "./components/AddRoom"
+import { Toaster } from './components/ui/sonner'
 
 function App() {
   useEffect(() => {
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <Toaster richColors closeButton />
       <Routes>
         <Route element={<Login />} path="/login" />
         <Route element={<TimetableAdmin />} path="/admin/timetable" />

@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { toast } from "sonner";
 
 export interface UserInterface {
   _id: string;
@@ -60,15 +61,6 @@ const initialState = {
 const UserContext = React.createContext<Context>(initialState);
 
 export function UserProvider({ children }: React.PropsWithChildren<{}>) {
-  React.useEffect(() => {
-    const token = localStorage.getItem("arsd-college-accessToken");
-    if (!token) {
-      return console.log("Token not found -", token);
-    }
-    setAccessToken(token);
-    fetchUser();
-  }, []);
-
   const days = [
     "Sunday",
     "Monday",
@@ -78,6 +70,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     "Friday",
     "Saturday",
   ];
+  const tokenKey = "arsd-college-accessToken";
 
   const date = new Date();
   const day = days[date.getDay()];
@@ -100,108 +93,99 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     axios
       .get("/api/v1/users/get", {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem(
-            "arsd-college-accessToken"
-          )}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setUser(res.data.data);
-        } else {
-          console.log(res.data.message);
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  }
-
-  async function loginUser(email: string, password: string) {
-    setLoading(true);
-    axios
-      .post("/api/v1/users/login", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setUser(res.data.data);
-          setAccessToken(res.data.accessToken);
-        } else {
-          console.log(res.data.message);
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  }
-
-  async function deleteUser(teacherId: string) {
-    setLoading(true);
-    axios
-      .delete("/api/v1/users/delete", {
-        params: {
-          teacherId,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem(
-            "arsd-college-accessToken"
-          )}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setUser(res.data.data);
-        } else {
-          console.log(res.data.message);
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  }
-
-  async function becomeAdmin(teacherId: string) {
-    setLoading(true);
-    axios
-      .patch("/api/v1/becomeAdmin", {
-        params: {
-          teacherId,
-        },
-        headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
+          setUser(res.data.data);
           console.log(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.response.data.message))
+      .finally(() => setLoading(false));
+  }
+
+  async function loginUser(email: string, password: string) {
+    setLoading(true);
+    const toastLoading = toast.loading("Please wait...");
+    axios
+      .post("/api/v1/users/login", {
+        email,
+        password,
+      })
+      .then((res) => {
+        if (res.data.success) {
+          localStorage.setItem(tokenKey, res.data.data.accessToken);
+          setUser(res.data.data.user);
+          setAccessToken(res.data.data.accessToken);
+          fetchUser();
+          toast.success("Logged in successfully", { id: toastLoading });
+        }
+      })
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
+      .finally(() => setLoading(false));
+  }
+
+  async function deleteUser(teacherId: string) {
+    const toastLoading = toast.loading("Please wait...");
+    setLoading(true);
+    axios
+      .delete(`/api/v1/users/delete/${teacherId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.data.success) {
+          setUser(res.data.data);
+        }
+      })
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
+      .finally(() => setLoading(false));
+  }
+
+  async function becomeAdmin(teacherId: string) {
+    const toastLoading = toast.loading("Please wait...");
+    setLoading(true);
+    axios
+      .patch(`/api/v1/becomeAdmin/${teacherId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          teachers.filter((teacher) => teacher._id === teacherId)
+          toast.success("User is now an admin", { id: toastLoading });
+        }
+      })
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
       .finally(() => setLoading(false));
   }
 
   async function getAllTeachers() {
     setLoading(true);
     axios
-      .get("/api/v1/users", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      .get("/api/v1/users")
       .then((res) => {
         if (res.data.success) {
           setTeachers(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
@@ -210,69 +194,90 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     email: string,
     password: string
   ) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .post("/api/v1/users/register", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({
+      .post(
+        "/api/v1/users/register",
+        {
           fullName,
           email,
           password,
-        }),
-      })
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.success) {
-          console.log(res.data.data);
-        } else {
-          console.log(res.data.message);
+          setTeachers([...teachers, res.data.data]);
+          toast.success("Teacher registered successfully", { id: toastLoading });
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
       .finally(() => setLoading(false));
   }
 
   async function getTeachersAbsent() {
     setLoading(true);
     axios
-      .get(`/api/v1/teachersabsent?day=${day}`, {
-        headers: {
-          "Content-Type": "application/json",
+      .get("/api/v1/teachersabsent", {
+        params: {
+          day,
         },
       })
       .then((res) => {
         if (res.data.success) {
           setTeachers(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
   async function addTeachersAbsent(...teachers: string[]) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .post("/api/v1/teachersabsent/new", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify({ teachers, day }),
-      })
+      .post(
+        "/api/v1/teachersabsent/new",
+        { teachers, day },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.success) {
-          setTeachers(res.data.data);
-        } else {
-          console.log(res.data.message);
+          setTeachers([...teachers, res.data.data]);
+          toast.success("Absent teacher added successfully", { id: toastLoading });
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
       .finally(() => setLoading(false));
   }
+
+  React.useEffect(() => {
+    const token = localStorage.getItem(tokenKey);
+    if (!token) {
+      return console.log("Token not found -", token);
+    }
+    if(!token) console.log("undefined token")
+    setAccessToken(token);
+    console.log(accessToken)
+    fetchUser();
+  }, []);
 
   return (
     <UserContext.Provider

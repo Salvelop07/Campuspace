@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
-import { User, UserInterface } from "../models/user.model";
+import { User } from "../models/user.model";
 import { ApiResponse } from "../utils/ApiResponse";
 
 const generateAccessToken = async (userId: string) => {
@@ -93,13 +93,13 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, "Invalid email");
   }
 
   const isPasswordCorrect = await user.isPasswordCorrect(password);
 
   if (!isPasswordCorrect) {
-    throw new ApiError(400, "Invalid email or password");
+    throw new ApiError(400, "Invalid password");
   }
 
   user.password = "";

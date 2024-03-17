@@ -36,6 +36,7 @@ function TeacherRegister() {
               id="email"
               placeholder="Email"
               type="email"
+              autoComplete="email"
               value={creds.email}
               onChange={(e) => setCreds({ ...creds, email: e.target.value })}
             />

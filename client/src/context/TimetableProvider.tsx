@@ -1,5 +1,7 @@
 import React from "react";
 import axios from "axios";
+import { useUser } from "./UserProvider";
+import { toast } from "sonner";
 
 export interface ClassInterface {
   allotedRoom: string;
@@ -31,11 +33,8 @@ interface Context {
   getCourses: Function;
   getTimetable: Function;
   deleteTimetable: Function;
-  fetchTimetable: Function;
   getAllTimetables: Function;
 }
-
-const accessToken = localStorage.getItem("arsd-college-accessToken");
 
 const initialState = {
   timetable: {
@@ -52,7 +51,6 @@ const initialState = {
   setCourses: () => {},
   setTimetable: () => {},
   setTimetables: () => {},
-  fetchTimetable: () => {},
   getAllTimetables: () => {},
   getTimetable: () => {},
   getCourses: () => {},
@@ -63,6 +61,8 @@ const initialState = {
 const TimetableContext = React.createContext<Context>(initialState);
 
 function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
+  const { accessToken } = useUser();
+
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const [courses, setCourses] = React.useState<string[]>([]);
@@ -77,72 +77,52 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
 
   const [timetables, setTimetables] = React.useState<TimetableInterface[]>([]);
 
-  async function fetchTimetable() {
-    setLoading(true);
-    axios
-      .get("/api/v1/timetable", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setTimetables(res.data.data);
-        } else {
-          console.log(res.data.message);
-        }
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
-  }
-
   async function getAllTimetables() {
     setLoading(true);
     axios
       .get("/api/v1/timetable/all", {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
           setTimetables(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
   async function addTimetable(timetable: TimetableInterface) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
       .post("/api/v1/timetable/new", timetable, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
           setTimetables([...timetables, res.data.data]);
-        } else {
-          console.log(res.data.message);
+          toast.success("Timetable added successfully", { id: toastLoading });
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
       .finally(() => setLoading(false));
   }
 
   async function deleteTimetable(timetableId: string) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
       .delete(`/api/v1/timetable/delete/${timetableId}`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
@@ -151,11 +131,14 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
           setTimetables(
             timetables.filter((timetable) => timetable._id !== timetableId)
           );
-        } else {
-          console.log(res.data.message);
+          toast.success("Timetable deleted successfully", { id: toastLoading });
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) =>
+        toast.warning(err.response.data.message, {
+          id: toastLoading,
+        })
+      )
       .finally(() => setLoading(false));
   }
 
@@ -164,18 +147,15 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
     axios
       .get(`/api/v1/course?stream=${stream}`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
           setCourses(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
@@ -186,23 +166,22 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
   ) {
     setLoading(true);
     axios
-      .get(
-        `/api/v1/timetable?stream=${stream}&course=${course}&semester=${semester}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      )
+      .get(`/api/v1/timetable`, {
+        params: {
+          stream,
+          course,
+          semester,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
       .then((res) => {
         if (res.data.success) {
           console.log(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
@@ -221,7 +200,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
         setTimetables,
         getTimetable,
         getCourses,
-        fetchTimetable,
         getAllTimetables,
       }}
     >

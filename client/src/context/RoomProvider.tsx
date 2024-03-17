@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { useUser } from "./UserProvider";
 
 export interface RoomInterface {
   roomNumber: string;
@@ -29,11 +30,11 @@ const initialState = {
   bookRoom: () => null,
 };
 
-const accessToken = localStorage.getItem("arsd-college-accessToken");
-
 const RoomContext = React.createContext<Context>(initialState);
 
 export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
+  const { accessToken } = useUser();
+
   const [rooms, setRooms] = React.useState<RoomInterface[]>([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -44,32 +45,26 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setRooms(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
   async function addRoom(...rooms: RoomInterface[]) {
     setLoading(true);
     axios
-      .post("/api/v1/room", {
+      .post("/api/v1/room", rooms, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: JSON.stringify(rooms),
       })
       .then((res) => {
         if (res.data.success) {
           setRooms([...rooms, res.data.data]);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
@@ -78,18 +73,15 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
     axios
       .delete(`/api/v1/room/${roomId}`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
           setRooms(rooms.filter((room) => room.roomNumber !== roomId));
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
@@ -98,18 +90,15 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
     axios
       .post(`/api/v1/room/book/${roomId}`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
           console.log(res.data.data);
-        } else {
-          console.log(res.data.message);
         }
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
