@@ -17,13 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useUser } from "@/context/UserProvider";
+import { RotateCw } from "lucide-react";
 
 function Login() {
+  const {  loading } = useUser();
   const navigate = useNavigate();
   const [creds, setCreds] = React.useState({ email: "", password: "" });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // loginUser(creds.email, creds.password);
   }
 
   return (
@@ -71,7 +75,13 @@ function Login() {
           </form>
         </CardContent>
         <CardFooter className="flex justify-evenly">
-          <Button type="submit" size="lg" onClick={() => navigate("/admin/teachersabsent")}>
+          <Button
+            type="submit"
+            size="lg"
+            disabled={loading}
+            onClick={() => navigate("/admin/teachersabsent")}
+          >
+            <RotateCw className={`${loading ? "": "hidden"}`} />
             Login
           </Button>
           <Button

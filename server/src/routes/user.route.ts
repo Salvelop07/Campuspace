@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   becomeAdmin,
   deleteTeacher,
+  getCurrentUser,
   getTeachers,
   loginUser,
   registerUser,
@@ -13,6 +14,8 @@ const router = Router();
 router.route("/").get(getTeachers);
 
 router.route("/login").post(loginUser);
+
+router.route("/get").get(verifyJWT, getCurrentUser)
 
 router.route("/register").post(verifyJWT, registerUser);
 

@@ -17,8 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { useRoom } from "@/context/RoomProvider";
 
 function AddRoom() {
+  const { rooms } = useRoom();
+  const navigate = useNavigate();
+
   const [body, setBody] = React.useState([
     {
       roomNumber: "",
@@ -26,32 +30,10 @@ function AddRoom() {
       location: "",
     },
   ]);
-  const [rooms, setRooms] = React.useState([
-    {
-      roomNumber: "room 1",
-      capacity: "100",
-      location: "Ground floor",
-    },
-  ]);
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const index = e.target.parentElement?.parentElement?.dataset.index;
     if (!index) return console.log("Index not found");
   }
-  const navigate = useNavigate();
-  React.useEffect(() => {
-    setRooms([
-      {
-        roomNumber: "room 1",
-        capacity: "100",
-        location: "Ground floor",
-      },
-      {
-        roomNumber: "room 1",
-        capacity: "100",
-        location: "Ground floor",
-      },
-    ]);
-  }, []);
   return (
     <section className="min-h-screen min-w-screen">
       <form>

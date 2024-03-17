@@ -24,21 +24,18 @@ const addTimetable = asyncHandler(async (req: Request, res: Response) => {
     !classes[0].allotedRoom ||
     !classes[0].allotedTime ||
     !classes[0].teacher ||
-    !classes[0].subject || 
-    !classes[0].paperId || 
+    !classes[0].subject ||
+    !classes[0].paperId ||
     !classes[0].day
   ) {
-    throw new ApiError(
-      400,
-      "All fields are required"
-    );
+    throw new ApiError(400, "All fields are required");
   }
 
   const timetable = await TimeTable.create({
     course,
     semester,
     classes,
-    stream
+    stream,
   });
 
   if (!timetable) {
@@ -111,4 +108,17 @@ const getTimetable = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, timetable, "Timetable found"));
 });
 
-export { addTimetable, deleteTimetable, getCourses, getTimetable };
+const getAllTimetables = asyncHandler(async (_: Request, res: Response) => {
+  const timetables = await TimeTable.find().populate({
+    path: "classes.teacher",
+    select: "fullName",
+    model: "user",
+    strictPopulate: false,
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, timetables, "Timetables found"));
+});
+
+export { addTimetable, deleteTimetable, getCourses, getTimetable, getAllTimetables };

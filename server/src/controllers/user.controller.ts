@@ -22,6 +22,14 @@ const generateAccessToken = async (userId: string) => {
   }
 };
 
+const getCurrentUser = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new ApiError(401, "User not verified");
+  }
+
+  return res.status(200).json(new ApiResponse(200, req.user, "User found"));
+});
+
 const getTeachers = asyncHandler(async (req: Request, res: Response) => {
   const teachers = await User.find({ isAdmin: false }).select("-password");
   if (!teachers || !teachers.length) {
@@ -153,4 +161,4 @@ const deleteTeacher = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, {}, "Teacher deleted successfully"));
 });
 
-export { getTeachers, registerUser, loginUser, becomeAdmin, deleteTeacher };
+export { getTeachers, registerUser, loginUser, becomeAdmin, deleteTeacher, getCurrentUser };
