@@ -3,6 +3,7 @@ import axios from "axios";
 import { useUser } from "./UserProvider";
 
 export interface RoomInterface {
+  _id: string;
   roomNumber: string;
   capacity: number;
   location: string;

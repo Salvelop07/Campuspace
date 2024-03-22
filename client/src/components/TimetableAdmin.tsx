@@ -17,6 +17,18 @@ import {
 } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import React, { FormEvent } from "react";
+import { useUser } from "@/context/UserProvider";
+import { useRoom } from "@/context/RoomProvider";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
+import { Trash2 } from "lucide-react";
+import { useTimetable } from "@/context/TimetableProvider";
 
 interface BodyInterface {
   course: string;
@@ -35,6 +47,9 @@ export interface ClassInterface {
 }
 
 function TimetableAdmin() {
+  const { timeslots, teachers, days } = useUser();
+  const { rooms } = useRoom();
+  const { timetables } = useTimetable();
   const navigate = useNavigate();
   const [body, setBody] = React.useState<BodyInterface>({
     course: "",
@@ -108,7 +123,7 @@ function TimetableAdmin() {
       <form onSubmit={handleSubmit}>
         <Card className="w-4/5 mx-auto dark:bg-card bg-zinc-100 mt-10">
           <CardHeader>
-            <CardTitle className="text-2xl">Timetable</CardTitle>
+            <CardTitle className="text-2xl text-center">Timetable</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid w-full items-center gap-4">
@@ -204,20 +219,33 @@ function TimetableAdmin() {
                         data-index={index}
                       >
                         <td>
-                          <Input
-                            id={`${index}-teacher`}
-                            placeholder="Teacher"
-                            name="teacher"
-                            value={cls.teacher}
-                            onChange={handleClassChange}
-                            inputMode="text"
-                          />
+                          <Select name="teacher">
+                            <SelectTrigger id={`${index}-teacher`}>
+                              <SelectValue placeholder="Teacher" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {teachers.length ? (
+                                teachers.map((teacher, index) => {
+                                  return (
+                                    <SelectItem value={teacher._id} key={index}>
+                                      {teacher.fullName}
+                                    </SelectItem>
+                                  );
+                                })
+                              ) : (
+                                <SelectItem value="na" disabled>
+                                  No teachers
+                                </SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
                         </td>
                         <td>
                           <Input
                             placeholder="Paper ID"
                             name="paperId"
                             value={cls.paperId}
+                            type="number"
                             onChange={handleClassChange}
                             inputMode="numeric"
                           />
@@ -232,16 +260,29 @@ function TimetableAdmin() {
                           />
                         </td>
                         <td>
-                          <Input
-                            placeholder="Alloted room"
-                            name="allotedRoom"
-                            value={cls.allotedRoom}
-                            onChange={handleClassChange}
-                            inputMode="text"
-                          />
+                          <Select name="room">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Room number" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {rooms.length ? (
+                                rooms.map((room, index) => {
+                                  return (
+                                    <SelectItem value={room._id} key={index}>
+                                      {room.roomNumber}
+                                    </SelectItem>
+                                  );
+                                })
+                              ) : (
+                                <SelectItem value="na" disabled>
+                                  No rooms
+                                </SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
                         </td>
                         <td>
-                        <Select
+                          <Select
                             name={`${index}-time`}
                             onValueChange={(value) =>
                               setBody({
@@ -259,15 +300,13 @@ function TimetableAdmin() {
                               <SelectValue placeholder="Time alloted" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="8.30-9.30">8.30 AM to 9.30 AM</SelectItem>
-                              <SelectItem value="9.30-10.30">9.30 AM to 10.30 AM</SelectItem>
-                              <SelectItem value="10.30-11.30">10.30 AM to 11.30 AM</SelectItem>
-                              <SelectItem value="11.30-12.30">11.30 AM to 12.30 PM</SelectItem>
-                              <SelectItem value="12.30-1.30">12.30 PM to 1.30 PM</SelectItem>
-                              <SelectItem value="1.30-2.30">1.30 to PM to 2.30 PM</SelectItem>
-                              <SelectItem value="2.30-3.30">2.30 PM to 3.30 PM</SelectItem>
-                              <SelectItem value="3.30-4.30">3.30 PM to 4.30 PM</SelectItem>
-                              <SelectItem value="4.30-5.30">4.30 PM to 5.30 PM</SelectItem>
+                              {timeslots.map((timeslot, index) => {
+                                return (
+                                  <SelectItem value={timeslot} key={index}>
+                                    {timeslot.split("-")?.join(" to ")}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                         </td>
@@ -290,15 +329,13 @@ function TimetableAdmin() {
                               <SelectValue placeholder="Day" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Monday">Monday</SelectItem>
-                              <SelectItem value="Tuesday">Tuesday</SelectItem>
-                              <SelectItem value="Wednesday">
-                                Wednesday
-                              </SelectItem>
-                              <SelectItem value="Thursday">Thursday</SelectItem>
-                              <SelectItem value="Friday">Friday</SelectItem>
-                              <SelectItem value="Satruday">Satruday</SelectItem>
-                              <SelectItem value="Sunday">Sunday</SelectItem>
+                              {days.map((day, index) => {
+                                return (
+                                  <SelectItem value={day} key={index}>
+                                    {day}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                         </td>
@@ -345,6 +382,41 @@ function TimetableAdmin() {
           </CardFooter>
         </Card>
       </form>
+      <Table className="mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900">
+        <TableHeader>
+          <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
+            <TableHead>Stream</TableHead>
+            <TableHead>Course</TableHead>
+            <TableHead>Semester</TableHead>
+            <TableHead> </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {timetables.length ? (
+            timetables.map((timetable, index) => {
+              return (
+                <TableRow
+                  key={index}
+                  className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                >
+                  <TableCell>{timetable.stream}</TableCell>
+                  <TableCell>{timetable.course}</TableCell>
+                  <TableCell>{timetable.semester}</TableCell>
+                  <TableCell className="w-fit">
+                    <Button size="icon" variant="destructive">
+                      <Trash2 />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
+            <TableRow className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800">
+              <TableCell colSpan={4}>No timetables</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </section>
   );
 }

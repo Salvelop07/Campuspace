@@ -18,6 +18,13 @@ import {
   TableRow,
 } from "./ui/table";
 import { useRoom } from "@/context/RoomProvider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 function AddRoom() {
   const { rooms } = useRoom();
@@ -33,6 +40,14 @@ function AddRoom() {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const index = e.target.parentElement?.parentElement?.dataset.index;
     if (!index) return console.log("Index not found");
+    setBody(
+      body.map((room, idx) => {
+        if (idx === parseInt(index?.toString())) {
+          return { ...room, [e.target.name]: e.target.value };
+        }
+        return room;
+      })
+    );
   }
   return (
     <section className="min-h-screen min-w-screen">
@@ -67,18 +82,28 @@ function AddRoom() {
                             placeholder="Capacity"
                             name="capacity"
                             inputMode="numeric"
+                            type="number"
                             value={room.capacity}
                             onChange={handleChange}
                           />
                         </td>
                         <td>
-                          <Input
-                            placeholder="Location"
-                            name="location"
-                            inputMode="text"
-                            value={room.location}
-                            onChange={handleChange}
-                          />
+                          <Select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Location" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Ground floor">
+                                Ground floor
+                              </SelectItem>
+                              <SelectItem value="First floor">
+                                First floor
+                              </SelectItem>
+                              <SelectItem value="Second floor">
+                                Second floor
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </td>
                       </tr>
                     );

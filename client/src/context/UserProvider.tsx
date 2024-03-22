@@ -15,6 +15,7 @@ interface Context {
   accessToken: string;
   days: string[];
   day: string;
+  timeslots: string[];
   teachers: UserInterface[];
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,6 +42,7 @@ const initialState = {
   },
   day: "",
   days: [],
+  timeslots: [],
   teachers: [],
   accessToken: "",
   loading: false,
@@ -62,13 +64,23 @@ const UserContext = React.createContext<Context>(initialState);
 
 export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   const days = [
-    "Sunday",
     "Monday",
     "Tuesday",
     "Wednesday",
     "Thursday",
     "Friday",
     "Saturday",
+  ];
+  const timeslots = [
+    "8.30-9.30",
+    "9.30-10.30",
+    "10.30-11.30",
+    "11.30-12.30",
+    "12.30-1.30",
+    "1.30-2.30",
+    "2.30-3.30",
+    "3.30-4.30",
+    "4.30-5.30",
   ];
   const tokenKey = "arsd-college-accessToken";
 
@@ -102,7 +114,9 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           console.log(res.data.data);
         }
       })
-      .catch((err) => console.warn(err.response.data.message))
+      .catch((err) =>
+        console.error(err.response.data.message || "Something broke!")
+      )
       .finally(() => setLoading(false));
   }
 
@@ -124,7 +138,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         }
       })
       .catch((err) =>
-        toast.warning(err.response.data.message, {
+        toast.error(err.response.data.message || "Something broke!", {
           id: toastLoading,
         })
       )
@@ -146,7 +160,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         }
       })
       .catch((err) =>
-        toast.warning(err.response.data.message, {
+        toast.error(err.response.data.message || "Something broke!", {
           id: toastLoading,
         })
       )
@@ -164,12 +178,12 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
-          teachers.filter((teacher) => teacher._id === teacherId)
+          teachers.filter((teacher) => teacher._id === teacherId);
           toast.success("User is now an admin", { id: toastLoading });
         }
       })
       .catch((err) =>
-        toast.warning(err.response.data.message, {
+        toast.error(err.response.data.message || "Something broke!", {
           id: toastLoading,
         })
       )
@@ -213,11 +227,13 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTeachers([...teachers, res.data.data]);
-          toast.success("Teacher registered successfully", { id: toastLoading });
+          toast.success("Teacher registered successfully", {
+            id: toastLoading,
+          });
         }
       })
       .catch((err) =>
-        toast.warning(err.response.data.message, {
+        toast.error(err.response.data.message || "Something broke!", {
           id: toastLoading,
         })
       )
@@ -257,11 +273,13 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTeachers([...teachers, res.data.data]);
-          toast.success("Absent teacher added successfully", { id: toastLoading });
+          toast.success("Absent teacher added successfully", {
+            id: toastLoading,
+          });
         }
       })
       .catch((err) =>
-        toast.warning(err.response.data.message, {
+        toast.error(err.response.data.message || "Something broke!", {
           id: toastLoading,
         })
       )
@@ -273,9 +291,9 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     if (!token) {
       return console.log("Token not found -", token);
     }
-    if(!token) console.log("undefined token")
+    if (!token) console.log("undefined token");
     setAccessToken(token);
-    console.log(accessToken)
+    console.log(accessToken);
     fetchUser();
   }, []);
 
@@ -284,6 +302,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       value={{
         day,
         days,
+        timeslots,
         user,
         accessToken,
         teachers,

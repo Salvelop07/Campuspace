@@ -16,7 +16,9 @@ function Navbar() {
           <Button
             size="icon"
             variant="secondary"
-            className="md:hidden dark:bg-zinc-900 ring-1 dark:ring-zinc-600 ring-zinc-100"
+            className={`md:hidden dark:bg-zinc-900 ring-1 dark:ring-zinc-600 ring-zinc-100 ${
+              location.pathname.includes("/bookroom") ? "hidden" : ""
+            }`}
             onClick={() => setOpenNav(!openNav)}
           >
             {openNav ? <X /> : <Equal />}
@@ -25,10 +27,26 @@ function Navbar() {
             <img src={logo} alt="" className="w-10 object-contain" />
             <span>ARSD College</span>
           </Link>
+          <span
+            className={
+              location.pathname.includes("/bookroom")
+                ? "absolute right-4 flex gap-4 items-center"
+                : "hidden"
+            }
+          >
+            <Button variant="destructive" onClick={() => {
+              navigate("/")
+              localStorage.removeItem("arsd-college-accessToken")
+            }}>Logout</Button>
+            <ModeToggle />
+          </span>
         </span>
         <ul
           className={`${
-            location.pathname.includes("/admin") ? "hidden" : ""
+            location.pathname.includes("/admin") ||
+            location.pathname.includes("/bookroom")
+              ? "hidden"
+              : ""
           } flex gap-2`}
         >
           <li>
@@ -131,7 +149,10 @@ function Navbar() {
       <ul
         className={`flex flex-col absolute transition-transform duration-300 z-10 border-b-2 border-gray-300 dark:border-gray-700 w-full " 
       ${openNav ? "-translate-y-0" : "-translate-y-64"} ${
-          location.pathname.includes("/admin") ? "hidden" : ""
+          location.pathname.includes("/admin") ||
+          location.pathname.includes("/teacher")
+            ? "hidden"
+            : ""
         }`}
       >
         <li>
@@ -229,7 +250,7 @@ function Navbar() {
           <Button
             variant="outline"
             onClick={() => {
-              navigate("/admin/register");
+              navigate("/admin/addroom");
               setOpenNav(!openNav);
             }}
             className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"

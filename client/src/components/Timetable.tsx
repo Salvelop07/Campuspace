@@ -23,9 +23,12 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import jsonData from "../../data.json";
+import { useUser } from "@/context/UserProvider";
+import { useTimetable } from "@/context/TimetableProvider";
 
 function Timetable() {
+  const { days } = useUser();
+  const { timetable } = useTimetable();
   return (
     <section className="min-h-screen min-w-screen">
       <Card className="w-4/5 md:w-3/5 mx-auto my-6 bg-zinc-100 dark:bg-card">
@@ -92,24 +95,31 @@ function Timetable() {
       <Table className="mx-auto w-5/6 md:w-3/5 my-4 bg-zinc-100 dark:bg-zinc-900">
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
-            <TableHead>Teacher</TableHead>
-            <TableHead>Room</TableHead>
-            <TableHead>Subject</TableHead>
+            <TableHead>Time</TableHead>
+            {days.map((day, index) => {
+              return <TableHead key={index}>{day}</TableHead>;
+            })}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {jsonData.map((teacher, index) => {
-            return (
-              <TableRow
-                key={index}
-                className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
-              >
-                <TableCell>{teacher.roomNumber}</TableCell>
-                <TableCell>{teacher.capacity}</TableCell>
-                <TableCell>{teacher.location}</TableCell>
-              </TableRow>
-            );
-          })}
+          {timetable.classes.length ? (
+            timetable.classes.map((cls, index) => {
+              return (
+                <TableRow
+                  key={index}
+                  className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                >
+                  <TableCell>{cls.allotedTime.split("-")?.join(" - ")}</TableCell>
+                  <TableCell>{cls.allotedTime}</TableCell>
+                  <TableCell>{cls.subject}</TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
+            <TableRow className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800">
+              <TableCell colSpan={8}>No timetable</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </section>
