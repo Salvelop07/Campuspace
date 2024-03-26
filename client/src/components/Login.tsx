@@ -19,14 +19,16 @@ function Login() {
 
   React.useEffect(() => {
     if (user._id) {
-      navigate("/admin/teachersabsent");
+      if (user.isAdmin) {
+        return navigate("/admin/teachersabsent");
+      }
+      navigate("/bookroom");
     }
-  }, [])
+  }, [user]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await loginUser(creds.email, creds.password);
-    navigate("/admin/teachersabsent")
+    await loginUser(creds.email, creds.password, "/admin/teachersabsent");
   }
 
   return (

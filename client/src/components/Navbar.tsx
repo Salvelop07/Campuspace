@@ -4,8 +4,10 @@ import { ModeToggle } from "./ModeToggle";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Equal, X } from "lucide-react";
 import React from "react";
+import { useUser } from "../context/UserProvider";
 
 function Navbar() {
+  const { tokenKey } = useUser();
   const [openNav, setOpenNav] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,10 +36,15 @@ function Navbar() {
                 : "hidden"
             }
           >
-            <Button variant="destructive" onClick={() => {
-              navigate("/")
-              localStorage.removeItem("arsd-college-accessToken")
-            }}>Logout</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                navigate("/");
+                localStorage.removeItem(tokenKey);
+              }}
+            >
+              Logout
+            </Button>
             <ModeToggle />
           </span>
         </span>
@@ -53,7 +60,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               Vacant Rooms
             </Button>
@@ -62,7 +69,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/timetable")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               Timetable
             </Button>
@@ -71,7 +78,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/teachersabsent")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               Teachers Absent
             </Button>
@@ -97,7 +104,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/admin/timetable")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               New Timetable
             </Button>
@@ -106,7 +113,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/admin/teachersabsent")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               Teachers Absent
             </Button>
@@ -115,7 +122,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/admin/register")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               Register Teacher
             </Button>
@@ -124,7 +131,7 @@ function Navbar() {
             <Button
               variant="ghost"
               onClick={() => navigate("/admin/addroom")}
-              className="hidden md:flex dark:hover:bg-zinc-900"
+              className="hidden md:flex dark:hover:bg-zinc-700"
             >
               Rooms
             </Button>
@@ -134,7 +141,7 @@ function Navbar() {
               variant="destructive"
               onClick={() => {
                 navigate("/");
-                localStorage.removeItem("arsd-college-accessToken");
+                localStorage.removeItem(tokenKey);
               }}
               className="hidden md:flex"
             >
@@ -264,7 +271,7 @@ function Navbar() {
             onClick={() => {
               navigate("/");
               setOpenNav(!openNav);
-              localStorage.removeItem("arsd-college-accessToken");
+              localStorage.removeItem(tokenKey);
             }}
             className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600 text-red-500"
           >

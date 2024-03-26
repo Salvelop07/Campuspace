@@ -29,6 +29,7 @@ import {
 } from "./ui/table";
 import { Trash2 } from "lucide-react";
 import { useTimetable } from "@/context/TimetableProvider";
+import { toast } from "sonner";
 
 interface BodyInterface {
   course: string;
@@ -47,10 +48,24 @@ export interface ClassInterface {
 }
 
 function TimetableAdmin() {
-  const { timeslots, teachers, days } = useUser();
-  const { rooms } = useRoom();
-  const { timetables } = useTimetable();
   const navigate = useNavigate();
+  const { timeslots, teachers, days, user } = useUser();
+  const { rooms } = useRoom();
+  const { timetables, getAllTimetables } = useTimetable();
+
+  React.useEffect(() => {
+    if (!user._id) {
+      toast("Please login again");
+      navigate("/login");
+    } else {
+      if (!user.isAdmin) navigate("/bookroom");
+    }
+  }, [user]);
+  
+  React.useEffect(() => {
+    getAllTimetables();
+  }, [])
+
   const [body, setBody] = React.useState<BodyInterface>({
     course: "",
     semester: "",

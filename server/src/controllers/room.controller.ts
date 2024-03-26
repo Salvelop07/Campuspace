@@ -16,26 +16,23 @@ const getRooms = asyncHandler(async (_: Request, res: Response) => {
 });
 
 const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
-  const { day, time } = req.query;
-  if (!day || !time) {
-    throw new ApiError(400, "Day is required");
+  const { time } = req.query;
+  if (!time || !(typeof time === "string")) {
+    throw new ApiError(400, "Time is required");
   }
 
-  const rooms = await Room.aggregate([
-    {
-      $lookup: {
-        from: "occupiedrooms",
-        localField: "_id",
-        foreignField: "room",
-        as: "occupied",
-      },
-    },
-    {
-      $match: {
-        "occupied.day": day,
-      },
-    },
-  ]);
+  const vacantRooms = await Room.getOccupiedRooms(time)
+  const rooms = vacantRooms[0]?.rooms.map((room) => {
+    return room
+  })
+
+  if (!rooms.length) {
+    throw new ApiError(404, "No empty rooms found")
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, rooms, "Vacant rooms found")
+  )
 });
 
 const addRooms = asyncHandler(async (req: Request, res: Response) => {
@@ -100,4 +97,4 @@ const deleteRoom = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, {}, "Room deleted successfully"));
 });
 
-export { addRooms, deleteRoom, getRooms };
+export { addRooms, deleteRoom, getRooms, getVacantRooms };

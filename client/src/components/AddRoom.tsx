@@ -25,10 +25,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useUser } from "@/context/UserProvider";
+import { toast } from "sonner";
 
 function AddRoom() {
   const { rooms } = useRoom();
+  const { user } = useUser();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!user._id) {
+      toast("Please login again");
+      navigate("/login");
+    } else {
+      if (!user.isAdmin) navigate("/bookroom");
+    }
+  }, [user]);
 
   const [body, setBody] = React.useState([
     {
@@ -170,7 +182,7 @@ function AddRoom() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rooms.map((room, index) => {
+          {rooms.length ? rooms.map((room, index) => {
             return (
               <TableRow key={index}>
                 <TableCell>{room.roomNumber}</TableCell>
@@ -178,7 +190,11 @@ function AddRoom() {
                 <TableCell>{room.location}</TableCell>
               </TableRow>
             );
-          })}
+          }): (
+            <TableRow>
+              <TableCell colSpan={3}>No rooms</TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </section>

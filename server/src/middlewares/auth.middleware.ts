@@ -10,7 +10,7 @@ const verifyJWT = async (req: Request, _: Response, next: NextFunction) => {
     if (!token) {
       throw new ApiError(400, "Token is required");
     }
-console.log(token)
+    
     const decodedToken = (await jwt.verify(
       token,
       process.env.ACCESS_TOKEN_SECRET as string

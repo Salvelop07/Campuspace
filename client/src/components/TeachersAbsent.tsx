@@ -28,14 +28,23 @@ function TeachersAbsent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teachers.map((teacher, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell>{teacher.fullName}</TableCell>
-                    <TableCell>{teacher.email}</TableCell>
-                  </TableRow>
-                );
-              })}
+              {teachers.length ? (
+                teachers.map((teacher, index) => {
+                  return (
+                    <TableRow
+                      key={index}
+                      className="hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                    >
+                      <TableCell>{teacher.fullName}</TableCell>
+                      <TableCell>{teacher.email}</TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
+                  <TableCell colSpan={2}>No teachers absent</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>

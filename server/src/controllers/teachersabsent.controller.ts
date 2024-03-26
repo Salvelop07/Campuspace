@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import { ApiError } from "../utils/ApiError";
-import { TeacherAbsent } from "../models/teacherabsent.model";
+import { TeacherAbsent } from "../models/absentteacher.model";
 import { ApiResponse } from "../utils/ApiResponse";
 
 const addTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {

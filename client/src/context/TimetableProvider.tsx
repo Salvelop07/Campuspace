@@ -2,8 +2,9 @@ import React from "react";
 import axios from "axios";
 import { useUser } from "./UserProvider";
 import { toast } from "sonner";
+import {useNavigate} from "react-router-dom"
 
-export interface ClassInterface {
+interface ClassInterface {
   allotedRoom: string;
   allotedTime: string;
   teacher: string;
@@ -12,7 +13,7 @@ export interface ClassInterface {
   day: string;
 }
 
-export interface TimetableInterface {
+interface TimetableInterface {
   _id: string;
   stream: string;
   course: string;
@@ -61,6 +62,7 @@ const initialState = {
 const TimetableContext = React.createContext<Context>(initialState);
 
 function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
+  const navigate = useNavigate();
   const { accessToken } = useUser();
 
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -77,7 +79,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
 
   const [timetables, setTimetables] = React.useState<TimetableInterface[]>([]);
 
-  async function getAllTimetables() {
+  async function getAllTimetables(navigateTo?: string) {
     setLoading(true);
     axios
       .get("/api/v1/timetable/all", {
@@ -88,13 +90,14 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTimetables(res.data.data);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function addTimetable(timetable: TimetableInterface) {
+  async function addTimetable(timetable: TimetableInterface, navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -107,6 +110,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
         if (res.data.success) {
           setTimetables([...timetables, res.data.data]);
           toast.success("Timetable added successfully", { id: toastLoading });
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -117,7 +121,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteTimetable(timetableId: string) {
+  async function deleteTimetable(timetableId: string, navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -132,6 +136,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
             timetables.filter((timetable) => timetable._id !== timetableId)
           );
           toast.success("Timetable deleted successfully", { id: toastLoading });
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -142,7 +147,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getCourses(stream: string) {
+  async function getCourses(stream: string, navigateTo?: string) {
     setLoading(true);
     axios
       .get(`/api/v1/course?stream=${stream}`, {
@@ -153,6 +158,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setCourses(res.data.data);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
@@ -162,7 +168,8 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
   async function getTimetable(
     stream: string,
     course: string,
-    semester: string
+    semester: string,
+    navigateTo?: string
   ) {
     setLoading(true);
     axios
@@ -178,7 +185,8 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
-          console.log(res.data.data);
+          setTimetable(res.data.data)
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))

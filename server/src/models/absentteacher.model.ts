@@ -16,15 +16,16 @@ const teacherAbsentSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-  },
-  {
-    timestamps: true,
-    expireAfterSeconds: 86400,
+     createdAt: {
+      type: Date,
+      expires: 86400,
+      default: Date.now
+    }
   }
 );
 
 const TeacherAbsent = mongoose.model<TeacherAbsentInterface>(
-  "teacherabsent",
+  "absentteacher",
   teacherAbsentSchema
 );
 

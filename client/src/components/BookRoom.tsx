@@ -9,9 +9,25 @@ import {
 import { Button } from "./ui/button";
 import { Bookmark } from "lucide-react";
 import { useRoom } from "../context/RoomProvider";
+import { useUser } from "@/context/UserProvider";
+import { toast } from "sonner";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export function BookRoom() {
+  const { user } = useUser();
   const { rooms } = useRoom();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!user._id) {
+      toast("Please login again");
+      navigate("/login");
+    } else {
+      if (!user.isAdmin) navigate("/admin/teachersabsent");
+    }
+  }, [user]);
+  
   return (
     <section className="min-h-screen">
       <Table className="mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900">

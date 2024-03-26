@@ -11,39 +11,49 @@ import { CheckboxDemo } from "./CheckboxDemo";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserProvider";
 import { toast } from "sonner";
-
-export interface TeacherInterface {
-  _id: string;
-  fullName: string;
-  email: string;
-}
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
 function TeachersAbsentAdmin() {
   const navigate = useNavigate();
-  const { user, teachers } = useUser();
-  const [body, setBody] = React.useState<TeacherInterface[]>([]);
-  function handleChange(checked: boolean, teacherEmail: string) {
-    if (!checked) {
-      return setBody((prev) =>
-        prev.filter((teacher) => teacher.email !== teacherEmail)
-      );
+  const { user, teachers, getAllTeachers, addTeachersAbsent, teachersAbsent, getTeachersAbsent } =
+    useUser();
+
+  React.useEffect(() => {
+    if (!user._id) {
+      toast("Please login again");
+      navigate("/login");
+    } else {
+      if (!user.isAdmin) navigate("/bookroom");
     }
-    const teacher = teachers.find((teacher) => teacher.email === teacherEmail);
+  }, [user]);
+
+  React.useEffect(() => {
+    getAllTeachers();
+    getTeachersAbsent()
+  },[])
+
+  const [body, setBody] = React.useState<string[]>([]);
+  function handleChange(checked: boolean, teacherId: string) {
+    if (!checked) {
+      return setBody((prev) => prev.filter((teacher) => teacher !== teacherId));
+    }
+    const teacher = teachers.find((teacher) => teacher._id === teacherId);
     if (!teacher) return console.log("Teacher not found");
-    setBody([...body, teacher]);
+    setBody([...body, teacher._id]);
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(body);
+    addTeachersAbsent(body);
   }
 
-  React.useEffect(() => {
-    if(!user._id){
-      toast("Please login again")
-      navigate("/login")
-    }
-  }, []);
   return (
     <section className="min-h-screen min-w-screen">
       <form onSubmit={handleSubmit}>
@@ -54,30 +64,60 @@ function TeachersAbsentAdmin() {
           <CardContent>
             <table className="w-full">
               <tbody className="grid md:grid-cols-2 grid-cols-1">
-                {teachers.map((teacher, index) => {
-                  return (
-                    <tr key={index}>
-                      <td>
-                        <CheckboxDemo
-                          text={teacher.fullName}
-                          value={teacher._id}
-                          handleChange={handleChange}
-                          name="teacher"
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
+                {teachers.length ? (
+                  teachers.map((teacher, index) => {
+                    return (
+                      <tr key={index}>
+                        <td>
+                          <CheckboxDemo
+                            text={teacher.fullName}
+                            value={teacher._id}
+                            handleChange={handleChange}
+                            name="teacher"
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td>No teachers</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button type="submit" size="lg">
+            <Button type="submit" size="lg" disabled={body.length === 0}>
               Mark as Absent
             </Button>
           </CardFooter>
         </Card>
       </form>
+      <Table className="mx-auto md:w-3/5 w-4/5">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Teacher</TableHead>
+            <TableHead>Email</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {teachersAbsent.length ? (
+            teachersAbsent.map((teacher, index) => {
+              return (
+                <TableRow key={index}>
+                  <TableCell>{teacher.fullName}</TableCell>
+                  <TableCell>{teacher.email}</TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
+            <TableRow>
+              <TableCell colSpan={2}>No teachers absent</TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </section>
   );
 }

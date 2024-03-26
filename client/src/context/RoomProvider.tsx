@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
 import { useUser } from "./UserProvider";
+import { useNavigate } from "react-router-dom";
 
-export interface RoomInterface {
+interface RoomInterface {
   _id: string;
   roomNumber: string;
   capacity: number;
@@ -34,25 +35,27 @@ const initialState = {
 const RoomContext = React.createContext<Context>(initialState);
 
 export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
+  const navigate = useNavigate()
   const { accessToken } = useUser();
 
   const [rooms, setRooms] = React.useState<RoomInterface[]>([]);
   const [loading, setLoading] = React.useState(false);
 
-  async function fetchRooms() {
+  async function fetchRooms(navigateTo?: string) {
     setLoading(true);
     axios
       .get("/api/v1/room")
       .then((res) => {
         if (res.data.success) {
           setRooms(res.data.data);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function addRoom(...rooms: RoomInterface[]) {
+  async function addRoom(rooms: RoomInterface[], navigateTo?: string) {
     setLoading(true);
     axios
       .post("/api/v1/room", rooms, {
@@ -63,13 +66,14 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setRooms([...rooms, res.data.data]);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function deleteRoom(roomId: string) {
+  async function deleteRoom(roomId: string, navigateTo?: string) {
     setLoading(true);
     axios
       .delete(`/api/v1/room/${roomId}`, {
@@ -80,13 +84,14 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setRooms(rooms.filter((room) => room.roomNumber !== roomId));
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function bookRoom(roomId: string) {
+  async function bookRoom(roomId: string, navigateTo?: string) {
     setLoading(true);
     axios
       .post(`/api/v1/room/book/${roomId}`, {
@@ -97,6 +102,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           console.log(res.data.data);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))

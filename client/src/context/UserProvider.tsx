@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
-export interface UserInterface {
+interface UserInterface {
   _id: string;
   fullName: string;
   email: string;
@@ -14,9 +15,11 @@ interface Context {
   user: UserInterface;
   accessToken: string;
   days: string[];
+  tokenKey: string;
   day: string;
   timeslots: string[];
   teachers: UserInterface[];
+  teachersAbsent: UserInterface[];
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setTeachers: React.Dispatch<React.SetStateAction<UserInterface[]>>;
@@ -44,7 +47,9 @@ const initialState = {
   days: [],
   timeslots: [],
   teachers: [],
+  teachersAbsent: [],
   accessToken: "",
+  tokenKey: "",
   loading: false,
   setLoading: () => {},
   setTeachers: () => {},
@@ -63,6 +68,7 @@ const initialState = {
 const UserContext = React.createContext<Context>(initialState);
 
 export function UserProvider({ children }: React.PropsWithChildren<{}>) {
+  const navigate = useNavigate();
   const days = [
     "Monday",
     "Tuesday",
@@ -99,8 +105,10 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   const [accessToken, setAccessToken] = React.useState("");
 
   const [teachers, setTeachers] = React.useState<UserInterface[]>([]);
+  const [teachersAbsent, setTeachersAbsent] = React.useState<UserInterface[]>([]);
 
-  async function fetchUser() {
+  async function fetchUser(navigateTo?: string) {
+    if (!accessToken) return console.log("No token");
     setLoading(true);
     axios
       .get("/api/v1/users/get", {
@@ -111,7 +119,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setUser(res.data.data);
-          console.log(res.data.data);
+          navigateTo ? navigate(navigateTo): ""
         }
       })
       .catch((err) =>
@@ -120,7 +128,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function loginUser(email: string, password: string) {
+  async function loginUser(email: string, password: string, navigateTo?: string) {
     setLoading(true);
     const toastLoading = toast.loading("Please wait...");
     axios
@@ -135,6 +143,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           setAccessToken(res.data.data.accessToken);
           fetchUser();
           toast.success("Logged in successfully", { id: toastLoading });
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -145,7 +154,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteUser(teacherId: string) {
+  async function deleteUser(teacherId: string, navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -157,6 +166,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.data.success) {
           setUser(res.data.data);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -167,7 +177,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function becomeAdmin(teacherId: string) {
+  async function becomeAdmin(teacherId: string, navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -180,6 +190,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         if (res.data.success) {
           teachers.filter((teacher) => teacher._id === teacherId);
           toast.success("User is now an admin", { id: toastLoading });
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -190,13 +201,14 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getAllTeachers() {
+  async function getAllTeachers(navigateTo?: string) {
     setLoading(true);
     axios
       .get("/api/v1/users")
       .then((res) => {
         if (res.data.success) {
           setTeachers(res.data.data);
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
@@ -206,7 +218,8 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   async function registerTeacher(
     fullName: string,
     email: string,
-    password: string
+    password: string,
+    navigateTo?: string
   ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
@@ -230,6 +243,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Teacher registered successfully", {
             id: toastLoading,
           });
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -240,7 +254,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getTeachersAbsent() {
+  async function getTeachersAbsent(navigateTo?: string) {
     setLoading(true);
     axios
       .get("/api/v1/teachersabsent", {
@@ -250,14 +264,15 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
-          setTeachers(res.data.data);
+          setTeachersAbsent(res.data.data);
+          navigateTo ? navigate(navigateTo): ""
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function addTeachersAbsent(...teachers: string[]) {
+  async function addTeachersAbsent(teachers: string[], navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -276,6 +291,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Absent teacher added successfully", {
             id: toastLoading,
           });
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -288,14 +304,16 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     const token = localStorage.getItem(tokenKey);
+    console.log(token);
     if (!token) {
-      return console.log("Token not found -", token);
+      return console.log("Token not found -");
     }
-    if (!token) console.log("undefined token");
-    setAccessToken(token);
-    console.log(accessToken);
-    fetchUser();
+    setAccessToken(() => token);
   }, []);
+
+  React.useEffect(() => {
+    fetchUser();
+  }, [accessToken]);
 
   return (
     <UserContext.Provider
@@ -306,7 +324,9 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         user,
         accessToken,
         teachers,
+        teachersAbsent,
         loading,
+        tokenKey,
         setLoading,
         setTeachers,
         setAccessToken,

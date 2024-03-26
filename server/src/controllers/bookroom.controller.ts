@@ -9,15 +9,22 @@ const bookRoom = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(401, "User not verified");
   }
   const { _id } = req.user;
-  const { roomId } = req.params;
+  const { roomId, time } = req.body;
 
-  if (!roomId) {
-    return res.status(400).json({ message: "Teachers and room are required" });
+  if (!roomId || !time) {
+    return res.status(400).json({ message: "Time and room are required" });
+  }
+
+  const isAvailable = await RoomOccupied.isRoomAvailable(time, roomId)
+
+  if(!isAvailable) {
+    throw new ApiError(400, "Room already occupied")
   }
 
   const roomOccupied = await RoomOccupied.create({
     occupiedBy: _id,
     room: roomId,
+    time
   });
 
   if (!roomOccupied) {
