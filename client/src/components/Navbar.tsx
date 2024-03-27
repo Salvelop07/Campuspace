@@ -7,7 +7,7 @@ import React from "react";
 import { useUser } from "../context/UserProvider";
 
 function Navbar() {
-  const { tokenKey } = useUser();
+  const { tokenKey, setUser, user } = useUser();
   const [openNav, setOpenNav] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +41,7 @@ function Navbar() {
               onClick={() => {
                 navigate("/");
                 localStorage.removeItem(tokenKey);
+                setUser({ ...user, _id: "" });
               }}
             >
               Logout
@@ -142,6 +143,7 @@ function Navbar() {
               onClick={() => {
                 navigate("/");
                 localStorage.removeItem(tokenKey);
+                setUser({ ...user, _id: "" });
               }}
               className="hidden md:flex"
             >
@@ -272,6 +274,7 @@ function Navbar() {
               navigate("/");
               setOpenNav(!openNav);
               localStorage.removeItem(tokenKey);
+              setUser({ ...user, _id: "" });
             }}
             className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600 text-red-500"
           >

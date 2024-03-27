@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 
 interface TeacherAbsentInterface extends mongoose.Document {
-  teachers: string;
+  teacher: string;
   day: string;
 }
 
 const teacherAbsentSchema = new mongoose.Schema(
   {
-    teachers: {
+    teacher: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
+      required: true
     },
     day: {
       type: String,

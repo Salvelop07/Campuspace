@@ -23,11 +23,22 @@ const addTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
     return { teacher, day };
   });
   
-  const teacherAbsent = await TeacherAbsent.create(teacherData);
+  const teacherAbsent = await TeacherAbsent.create(teacherData)
   if (!teacherAbsent) {
     throw new ApiError(400, "Teachers absent not added");
   }
 
+  const populatedTeachers = await TeacherAbsent.populate(teacherAbsent, {
+    path: "teacher",
+    select: "fullName email",
+    model: "user",
+    strictPopulate: false
+  })
+
+  if(!populatedTeachers){
+    throw new ApiError(400, "Teachers details were not fetched")
+  }
+  
   return res
     .status(201)
     .json(new ApiResponse(201, teacherAbsent, "Teachers absent added"));
@@ -41,7 +52,7 @@ const getTeachersAbsent = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const teachersAbsent = await TeacherAbsent.find({ day }).populate({
-    path: "user",
+    path: "teacher",
     select: "fullName email",
     model: "user",
     strictPopulate: false,

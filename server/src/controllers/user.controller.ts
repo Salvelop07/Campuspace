@@ -31,7 +31,7 @@ const getCurrentUser = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const getTeachers = asyncHandler(async (req: Request, res: Response) => {
-  const teachers = await User.find({ isAdmin: false }).select("-password");
+  const teachers = await User.find().select("-password");
   if (!teachers || !teachers.length) {
     throw new ApiError(404, "Teachers not found");
   }
@@ -112,7 +112,7 @@ const loginUser = asyncHandler(async (req: Request, res: Response) => {
     );
 });
 
-const becomeAdmin = asyncHandler(async (req: Request, res: Response) => {
+const changeAdmin = asyncHandler(async (req: Request, res: Response) => {
   if (!req.user) {
     throw new ApiError(401, "User not verified");
   }
@@ -129,14 +129,10 @@ const becomeAdmin = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(404, "User not found");
   }
 
-  if (user.isAdmin) {
-    throw new ApiError(400, "User is already an admin");
-  }
-
-  user.isAdmin = true;
+  user.isAdmin = !user.isAdmin;
   user.save({ validateBeforeSave: false });
 
-  return res.status(200).json(new ApiResponse(200, {}, "User is now an admin"));
+  return res.status(200).json(new ApiResponse(200, { admin: user.isAdmin }, user.isAdmin ? "User is now an admin" : "User is now a teacher"));
 });
 
 const deleteTeacher = asyncHandler(async (req: Request, res: Response) => {
@@ -161,4 +157,4 @@ const deleteTeacher = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, {}, "Teacher deleted successfully"));
 });
 
-export { getTeachers, registerUser, loginUser, becomeAdmin, deleteTeacher, getCurrentUser };
+export { getTeachers, registerUser, loginUser, changeAdmin, deleteTeacher, getCurrentUser };

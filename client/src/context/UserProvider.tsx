@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface UserInterface {
   _id: string;
@@ -13,24 +13,23 @@ interface UserInterface {
 
 interface Context {
   user: UserInterface;
-  accessToken: string;
   days: string[];
   tokenKey: string;
   day: string;
   timeslots: string[];
+  accessToken: string;
   teachers: UserInterface[];
   teachersAbsent: UserInterface[];
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setTeachers: React.Dispatch<React.SetStateAction<UserInterface[]>>;
   setUser: React.Dispatch<React.SetStateAction<UserInterface>>;
-  setAccessToken: React.Dispatch<React.SetStateAction<string>>;
   addTeachersAbsent: Function;
   getTeachersAbsent: Function;
   fetchUser: Function;
   loginUser: Function;
   deleteUser: Function;
-  becomeAdmin: Function;
+  changeAdmin: Function;
   getAllTeachers: Function;
   registerTeacher: Function;
 }
@@ -44,23 +43,22 @@ const initialState = {
     isAbsent: false,
   },
   day: "",
+  accessToken: "",
   days: [],
   timeslots: [],
   teachers: [],
   teachersAbsent: [],
-  accessToken: "",
   tokenKey: "",
   loading: false,
   setLoading: () => {},
   setTeachers: () => {},
-  setAccessToken: () => {},
   getTeachersAbsent: () => {},
   addTeachersAbsent: () => {},
   setUser: () => {},
   loginUser: () => {},
   fetchUser: () => {},
   deleteUser: () => {},
-  becomeAdmin: () => {},
+  changeAdmin: () => {},
   getAllTeachers: () => {},
   registerTeacher: () => {},
 };
@@ -68,6 +66,7 @@ const initialState = {
 const UserContext = React.createContext<Context>(initialState);
 
 export function UserProvider({ children }: React.PropsWithChildren<{}>) {
+  const location = useLocation();
   const navigate = useNavigate();
   const days = [
     "Monday",
@@ -89,6 +88,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     "4.30-5.30",
   ];
   const tokenKey = "arsd-college-accessToken";
+  let accessToken = localStorage.getItem(tokenKey) || "";
 
   const date = new Date();
   const day = days[date.getDay()];
@@ -102,10 +102,10 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     isAbsent: false,
   });
 
-  const [accessToken, setAccessToken] = React.useState("");
-
   const [teachers, setTeachers] = React.useState<UserInterface[]>([]);
-  const [teachersAbsent, setTeachersAbsent] = React.useState<UserInterface[]>([]);
+  const [teachersAbsent, setTeachersAbsent] = React.useState<UserInterface[]>(
+    []
+  );
 
   async function fetchUser(navigateTo?: string) {
     if (!accessToken) return console.log("No token");
@@ -119,7 +119,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setUser(res.data.data);
-          navigateTo ? navigate(navigateTo): ""
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -128,7 +128,11 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function loginUser(email: string, password: string, navigateTo?: string) {
+  async function loginUser(
+    email: string,
+    password: string,
+    navigateTo?: string
+  ) {
     setLoading(true);
     const toastLoading = toast.loading("Please wait...");
     axios
@@ -140,7 +144,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         if (res.data.success) {
           localStorage.setItem(tokenKey, res.data.data.accessToken);
           setUser(res.data.data.user);
-          setAccessToken(res.data.data.accessToken);
+          accessToken = res.data.data.accessToken;
           fetchUser();
           toast.success("Logged in successfully", { id: toastLoading });
           navigateTo ? navigate(navigateTo) : "";
@@ -165,7 +169,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.data.success) {
-          setUser(res.data.data);
+          setTeachers(teachers.filter((usr) => usr._id !== teacherId));
           navigateTo ? navigate(navigateTo) : "";
         }
       })
@@ -177,19 +181,27 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function becomeAdmin(teacherId: string, navigateTo?: string) {
+  async function changeAdmin(teacherId: string, navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .patch(`/api/v1/becomeAdmin/${teacherId}`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+      .patch(
+        `/api/v1/users/admin/${teacherId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.success) {
-          teachers.filter((teacher) => teacher._id === teacherId);
-          toast.success("User is now an admin", { id: toastLoading });
+          teachers.map((teacher) => {
+            if (teacher._id === teacherId) {
+              return (teacher.isAdmin = res.data.data.admin);
+            }
+          });
+          toast.success(res.data.message, { id: toastLoading });
           navigateTo ? navigate(navigateTo) : "";
         }
       })
@@ -207,7 +219,11 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .get("/api/v1/users")
       .then((res) => {
         if (res.data.success) {
-          setTeachers(res.data.data);
+          setTeachers(
+            res.data.data.filter(
+              (teacher: UserInterface) => teacher._id !== user._id
+            )
+          );
           navigateTo ? navigate(navigateTo) : "";
         }
       })
@@ -239,7 +255,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       )
       .then((res) => {
         if (res.data.success) {
-          setTeachers([...teachers, res.data.data]);
+          setTeachers([...teachers, res.data.data.user]);
           toast.success("Teacher registered successfully", {
             id: toastLoading,
           });
@@ -264,21 +280,29 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
-          setTeachersAbsent(res.data.data);
-          navigateTo ? navigate(navigateTo): ""
+          setTeachersAbsent(
+            res.data.data.map(
+              (teacher: {
+                teacher: { fullName: string; email: string; _id: string };
+              }) => {
+                return teacher.teacher;
+              }
+            )
+          );
+          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function addTeachersAbsent(teachers: string[], navigateTo?: string) {
+  async function addTeachersAbsent(teacherIds: string[], navigateTo?: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
       .post(
         "/api/v1/teachersabsent/new",
-        { teachers, day },
+        { teachers: teacherIds, day },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -287,7 +311,20 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       )
       .then((res) => {
         if (res.data.success) {
-          setTeachers([...teachers, res.data.data]);
+          setTeachersAbsent([
+            ...teachersAbsent,
+            ...res.data.data.map(
+              (teacher: {
+                teacher: { fullName: string; email: string; _id: string };
+              }) => {
+                console.log(teacher.teacher.fullName)
+                return teacher.teacher;
+              }
+            ),
+          ]);
+          setTeachers(
+            teachers.filter((teacher) => teacherIds.includes(teacher._id))
+          );
           toast.success("Absent teacher added successfully", {
             id: toastLoading,
           });
@@ -303,16 +340,10 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   }
 
   React.useEffect(() => {
-    const token = localStorage.getItem(tokenKey);
-    console.log(token);
-    if (!token) {
-      return console.log("Token not found -");
+    if (location.pathname.includes("/admin")) {
+      if (!accessToken) navigate("/login");
+      fetchUser();
     }
-    setAccessToken(() => token);
-  }, []);
-
-  React.useEffect(() => {
-    fetchUser();
   }, [accessToken]);
 
   return (
@@ -322,21 +353,20 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         days,
         timeslots,
         user,
-        accessToken,
         teachers,
+        accessToken,
         teachersAbsent,
         loading,
         tokenKey,
         setLoading,
         setTeachers,
-        setAccessToken,
         getTeachersAbsent,
         addTeachersAbsent,
         setUser,
         fetchUser,
         loginUser,
         deleteUser,
-        becomeAdmin,
+        changeAdmin,
         getAllTeachers,
         registerTeacher,
       }}

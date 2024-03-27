@@ -10,7 +10,6 @@ import { Button } from "./ui/button";
 import { CheckboxDemo } from "./CheckboxDemo";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserProvider";
-import { toast } from "sonner";
 import {
   Table,
   TableBody,
@@ -22,12 +21,17 @@ import {
 
 function TeachersAbsentAdmin() {
   const navigate = useNavigate();
-  const { user, teachers, getAllTeachers, addTeachersAbsent, teachersAbsent, getTeachersAbsent } =
-    useUser();
+  const {
+    user,
+    teachers,
+    getAllTeachers,
+    addTeachersAbsent,
+    teachersAbsent,
+    getTeachersAbsent,
+  } = useUser();
 
   React.useEffect(() => {
     if (!user._id) {
-      toast("Please login again");
       navigate("/login");
     } else {
       if (!user.isAdmin) navigate("/bookroom");
@@ -36,8 +40,8 @@ function TeachersAbsentAdmin() {
 
   React.useEffect(() => {
     getAllTeachers();
-    getTeachersAbsent()
-  },[])
+    getTeachersAbsent();
+  }, []);
 
   const [body, setBody] = React.useState<string[]>([]);
   function handleChange(checked: boolean, teacherId: string) {
@@ -52,6 +56,7 @@ function TeachersAbsentAdmin() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     addTeachersAbsent(body);
+    setBody([])
   }
 
   return (
@@ -66,18 +71,23 @@ function TeachersAbsentAdmin() {
               <tbody className="grid md:grid-cols-2 grid-cols-1">
                 {teachers.length ? (
                   teachers.map((teacher, index) => {
-                    return (
-                      <tr key={index}>
-                        <td>
-                          <CheckboxDemo
-                            text={teacher.fullName}
-                            value={teacher._id}
-                            handleChange={handleChange}
-                            name="teacher"
-                          />
-                        </td>
-                      </tr>
-                    );
+                    if (
+                      !teachersAbsent.some(
+                        (teacherAbsent) => teacher._id === teacherAbsent._id
+                      ) && !teacher.isAdmin
+                    )
+                      return (
+                        <tr key={index}>
+                          <td>
+                            <CheckboxDemo
+                              text={teacher.fullName}
+                              value={teacher._id}
+                              handleChange={handleChange}
+                              name="teacher"
+                            />
+                          </td>
+                        </tr>
+                      );
                   })
                 ) : (
                   <tr>

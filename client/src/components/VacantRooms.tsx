@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useRoom } from "@/context/RoomProvider";
+import React from "react";
 
 export interface RoomInterface {
   id: string;
@@ -16,7 +17,12 @@ export interface RoomInterface {
 }
 
 export function VacantRooms() {
-  const { rooms } = useRoom();
+  const { rooms, fetchRooms } = useRoom();
+
+  React.useEffect(() => {
+    fetchRooms();
+  }, [])
+
   return (
     <section className="min-h-screen">
       <h1 className="text-3xl text-center my-6">Vacant rooms</h1>

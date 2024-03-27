@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  becomeAdmin,
+  changeAdmin,
   deleteTeacher,
   getCurrentUser,
   getTeachers,
@@ -19,7 +19,7 @@ router.route("/get").get(verifyJWT, getCurrentUser)
 
 router.route("/register").post(verifyJWT, registerUser);
 
-router.route("/admin/:teacherId").patch(verifyJWT, becomeAdmin);
+router.route("/admin/:teacherId").patch(verifyJWT, changeAdmin);
 
 router.route("/delete/:teacherId").delete(verifyJWT, deleteTeacher);
 

@@ -1,3 +1,4 @@
+import React from "react";
 import { Card, CardTitle, CardHeader, CardContent } from "./ui/card";
 import {
   Table,
@@ -10,7 +11,12 @@ import {
 import { useUser } from "@/context/UserProvider";
 
 function TeachersAbsent() {
-  const { teachers } = useUser();
+  const { teachersAbsent, getTeachersAbsent } = useUser();
+
+  React.useEffect(() => {
+    getTeachersAbsent()
+  }, [])
+
   return (
     <section className="min-h-screen min-w-screen">
       <Card className="md:w-3/5 w-5/6 mx-auto dark:bg-zinc-900 bg-gray-200 my-6 select-none">
@@ -28,17 +34,18 @@ function TeachersAbsent() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {teachers.length ? (
-                teachers.map((teacher, index) => {
-                  return (
-                    <TableRow
-                      key={index}
-                      className="hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                    >
-                      <TableCell>{teacher.fullName}</TableCell>
-                      <TableCell>{teacher.email}</TableCell>
-                    </TableRow>
-                  );
+              {teachersAbsent.length ? (
+                teachersAbsent.map((teacher, index) => {
+                  if (!teacher.isAdmin)
+                    return (
+                      <TableRow
+                        key={index}
+                        className="hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      >
+                        <TableCell>{teacher.fullName}</TableCell>
+                        <TableCell>{teacher.email}</TableCell>
+                      </TableRow>
+                    );
                 })
               ) : (
                 <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">

@@ -2,7 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useUser } from "./UserProvider";
 import { toast } from "sonner";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 
 interface ClassInterface {
   allotedRoom: string;
@@ -97,7 +97,10 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function addTimetable(timetable: TimetableInterface, navigateTo?: string) {
+  async function addTimetable(
+    timetable: TimetableInterface,
+    navigateTo?: string
+  ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -150,7 +153,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
   async function getCourses(stream: string, navigateTo?: string) {
     setLoading(true);
     axios
-      .get(`/api/v1/course?stream=${stream}`, {
+      .get(`/api/v1/timetable/courses?stream=${stream}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -171,6 +174,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
     semester: string,
     navigateTo?: string
   ) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
       .get(`/api/v1/timetable`, {
@@ -185,11 +189,20 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
-          setTimetable(res.data.data)
+          setTimetable(res.data.data);
+          console.log(res.data.data);
           navigateTo ? navigate(navigateTo) : "";
+          toast.success("Timetable found", {
+            id: toastLoading,
+          });
         }
       })
-      .catch((err) => console.warn(err.message))
+      .catch((err) => {
+        toast.error("Something broke!", {
+          id: toastLoading,
+        });
+        console.log(err);
+      })
       .finally(() => setLoading(false));
   }
 

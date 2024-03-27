@@ -29,7 +29,17 @@ import {
 } from "./ui/table";
 import { Trash2 } from "lucide-react";
 import { useTimetable } from "@/context/TimetableProvider";
-import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 
 interface BodyInterface {
   course: string;
@@ -50,21 +60,21 @@ export interface ClassInterface {
 function TimetableAdmin() {
   const navigate = useNavigate();
   const { timeslots, teachers, days, user } = useUser();
-  const { rooms } = useRoom();
-  const { timetables, getAllTimetables } = useTimetable();
+  const { rooms, fetchRooms } = useRoom();
+  const { timetables, getAllTimetables, deleteTimetable, addTimetable } = useTimetable();
 
   React.useEffect(() => {
     if (!user._id) {
-      toast("Please login again");
       navigate("/login");
     } else {
       if (!user.isAdmin) navigate("/bookroom");
     }
   }, [user]);
-  
+
   React.useEffect(() => {
     getAllTimetables();
-  }, [])
+    fetchRooms();
+  }, []);
 
   const [body, setBody] = React.useState<BodyInterface>({
     course: "",
@@ -108,7 +118,7 @@ function TimetableAdmin() {
   }
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    console.log(body);
+    addTimetable(body)
   }
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setBody({
@@ -234,18 +244,35 @@ function TimetableAdmin() {
                         data-index={index}
                       >
                         <td>
-                          <Select name="teacher">
+                          <Select
+                            name="teacher"
+                            onValueChange={(value) =>
+                              setBody({
+                                ...body,
+                                classes: body.classes.map((cls) => {
+                                  if (cls === body.classes[index]) {
+                                    cls.teacher = value;
+                                  }
+                                  return cls;
+                                }),
+                              })
+                            }
+                          >
                             <SelectTrigger id={`${index}-teacher`}>
                               <SelectValue placeholder="Teacher" />
                             </SelectTrigger>
                             <SelectContent>
                               {teachers.length ? (
                                 teachers.map((teacher, index) => {
-                                  return (
-                                    <SelectItem value={teacher._id} key={index}>
-                                      {teacher.fullName}
-                                    </SelectItem>
-                                  );
+                                  if (!teacher.isAdmin)
+                                    return (
+                                      <SelectItem
+                                        value={teacher._id}
+                                        key={index}
+                                      >
+                                        {teacher.fullName}
+                                      </SelectItem>
+                                    );
                                 })
                               ) : (
                                 <SelectItem value="na" disabled>
@@ -275,7 +302,20 @@ function TimetableAdmin() {
                           />
                         </td>
                         <td>
-                          <Select name="room">
+                          <Select
+                            name="room"
+                            onValueChange={(value) =>
+                              setBody({
+                                ...body,
+                                classes: body.classes.map((cls) => {
+                                  if (cls === body.classes[index]) {
+                                    cls.allotedRoom = value;
+                                  }
+                                  return cls;
+                                }),
+                              })
+                            }
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="Room number" />
                             </SelectTrigger>
@@ -391,19 +431,33 @@ function TimetableAdmin() {
             >
               Cancel
             </Button>
-            <Button type="submit" size="lg">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={
+                body.semester.length === 0 ||
+                body.stream.length === 0 ||
+                body.course.length < 2 ||
+                body.classes[0].allotedRoom.length === 0 ||
+                body.classes[0].allotedTime.length === 0 ||
+                body.classes[0].day.length === 0 ||
+                body.classes[0].paperId.length === 4 ||
+                body.classes[0].subject.length === 4 ||
+                body.classes[0].teacher.length === 0
+              }
+            >
               Create
             </Button>
           </CardFooter>
         </Card>
       </form>
-      <Table className="mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900">
+      <Table className="mx-auto w-5/6 md:w-4/6 my-6 bg-zinc-100 dark:bg-zinc-900">
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
             <TableHead>Stream</TableHead>
             <TableHead>Course</TableHead>
             <TableHead>Semester</TableHead>
-            <TableHead> </TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -415,12 +469,36 @@ function TimetableAdmin() {
                   className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
                 >
                   <TableCell>{timetable.stream}</TableCell>
-                  <TableCell>{timetable.course}</TableCell>
+                  <TableCell className="text-ellipsis">
+                    {timetable.course}
+                  </TableCell>
                   <TableCell>{timetable.semester}</TableCell>
                   <TableCell className="w-fit">
-                    <Button size="icon" variant="destructive">
-                      <Trash2 />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="icon" variant="destructive">
+                          <Trash2 />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure you want to delete timetable?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteTimetable(timetable._id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TableCell>
                 </TableRow>
               );

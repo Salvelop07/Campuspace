@@ -25,43 +25,73 @@ import {
 } from "./ui/table";
 import { useUser } from "@/context/UserProvider";
 import { useTimetable } from "@/context/TimetableProvider";
+import React from "react";
 
 function Timetable() {
   const { days } = useUser();
-  const { timetable } = useTimetable();
+  const { timetable, courses, getCourses, getTimetable } = useTimetable();
+
+  const [body, setBody] = React.useState({
+    stream: "",
+    course: "",
+    semester: "",
+  });
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    getTimetable(body.stream, body.course, body.semester)
+  }
+  
   return (
     <section className="min-h-screen min-w-screen">
-      <Card className="w-4/5 md:w-3/5 mx-auto my-6 bg-zinc-100 dark:bg-card">
-        <CardHeader>
-          <CardTitle className="text-xl text-center">Timetable</CardTitle>
-          <CardDescription>View coursewise timetable</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form>
+      <form onSubmit={handleSubmit}>
+        <Card className="w-4/5 md:w-3/5 mx-auto my-6 bg-zinc-100 dark:bg-card">
+          <CardHeader>
+            <CardTitle className="text-xl text-center">Timetable</CardTitle>
+            <CardDescription>View coursewise timetable</CardDescription>
+          </CardHeader>
+          <CardContent>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="stream">Select Stream</Label>
-                <Select name="stream">
+                <Select
+                  name="stream"
+                  onValueChange={(value: string) => {
+                    getCourses(value);
+                    setBody({ ...body, stream: value });
+                  }}
+                >
                   <SelectTrigger id="stream">
                     <SelectValue placeholder="Stream" />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    <SelectItem value="arts">Arts</SelectItem>
-                    <SelectItem value="science">Science</SelectItem>
-                    <SelectItem value="commerce">Commerce</SelectItem>
+                    <SelectItem value="Arts">Arts</SelectItem>
+                    <SelectItem value="Science">Science</SelectItem>
+                    <SelectItem value="Commerce">Commerce</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="course">Select Course</Label>
-                <Select name="course">
+                <Select
+                  name="course"
+                  onValueChange={(value: string) =>
+                    setBody({ ...body, course: value })
+                  }
+                >
                   <SelectTrigger id="course">
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    <SelectItem value="next" disabled>
-                      Please select stream
-                    </SelectItem>
+                    {courses.length ? (
+                      courses.map((course) => {
+                        return <SelectItem value={course}>{course}</SelectItem>;
+                      })
+                    ) : (
+                      <SelectItem value="na" disabled>
+                        No courses
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -69,7 +99,12 @@ function Timetable() {
                 <Label htmlFor="semester" className="flex flex-start">
                   Semester
                 </Label>
-                <Select name="semester">
+                <Select
+                  name="semester"
+                  onValueChange={(value: string) =>
+                    setBody({ ...body, semester: value })
+                  }
+                >
                   <SelectTrigger id="semester">
                     <SelectValue placeholder="Semester" />
                   </SelectTrigger>
@@ -86,12 +121,12 @@ function Timetable() {
                 </Select>
               </div>
             </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-evenly">
-          <Button>View</Button>
-        </CardFooter>
-      </Card>
+          </CardContent>
+          <CardFooter className="flex justify-evenly">
+            <Button type="submit">View</Button>
+          </CardFooter>
+        </Card>
+      </form>
       <Table className="mx-auto w-5/6 md:w-3/5 my-4 bg-zinc-100 dark:bg-zinc-900">
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
@@ -109,7 +144,9 @@ function Timetable() {
                   key={index}
                   className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
                 >
-                  <TableCell>{cls.allotedTime.split("-")?.join(" - ")}</TableCell>
+                  <TableCell>
+                    {cls.allotedTime.split("-")?.join(" - ")}
+                  </TableCell>
                   <TableCell>{cls.allotedTime}</TableCell>
                   <TableCell>{cls.subject}</TableCell>
                 </TableRow>
