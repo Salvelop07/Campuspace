@@ -164,12 +164,15 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     axios
       .delete(`/api/v1/users/delete/${teacherId}`, {
         headers: {
-          Authorization: `Bearer ${accessToken}}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
-        if (res.data.data.success) {
+        if (res.data.success) {
           setTeachers(teachers.filter((usr) => usr._id !== teacherId));
+          toast.success(res.data.message, {
+            id: toastLoading
+          })
           navigateTo ? navigate(navigateTo) : "";
         }
       })
@@ -317,7 +320,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
               (teacher: {
                 teacher: { fullName: string; email: string; _id: string };
               }) => {
-                console.log(teacher.teacher.fullName)
                 return teacher.teacher;
               }
             ),

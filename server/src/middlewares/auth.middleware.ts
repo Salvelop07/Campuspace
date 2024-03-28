@@ -6,7 +6,7 @@ import { User } from "../models/user.model";
 const verifyJWT = async (req: Request, _: Response, next: NextFunction) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
-
+    
     if (!token) {
       throw new ApiError(400, "Token is required");
     }

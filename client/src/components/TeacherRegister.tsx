@@ -51,11 +51,16 @@ function TeacherRegister() {
     email: "",
     password: "",
   });
-  const [showPwd, setShowPwd] = React.useState(false)
+  const [showPwd, setShowPwd] = React.useState(false);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     registerTeacher(creds.fullName, creds.email, creds.password);
+    setCreds({
+      fullName: "",
+      email: "",
+      password: "",
+    });
   }
   return (
     <section className="min-h-screen min-w-screen">
@@ -95,7 +100,7 @@ function TeacherRegister() {
               <Input
                 id="password"
                 placeholder="Password"
-                type={showPwd ? "text": "password"}
+                type={showPwd ? "text" : "password"}
                 value={creds.password}
                 onChange={(e) =>
                   setCreds({ ...creds, password: e.target.value })
