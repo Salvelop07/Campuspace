@@ -24,7 +24,7 @@ export function BookRoom() {
       toast("Please login again");
       navigate("/login");
     } else {
-      if (!user.isAdmin) navigate("/admin/teachersabsent");
+      if (!user.isAdmin) navigate("/bookroom");
     }
   }, [user]);
   
