@@ -26,21 +26,35 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useUser } from "@/context/UserProvider";
-import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
+import { Trash2 } from "lucide-react";
 
 function AddRoom() {
-  const { rooms } = useRoom();
+  const { rooms, addRooms, fetchRooms, deleteRoom } = useRoom();
   const { user } = useUser();
   const navigate = useNavigate();
 
   React.useEffect(() => {
     if (!user._id) {
-      toast("Please login again");
       navigate("/login");
     } else {
       if (!user.isAdmin) navigate("/bookroom");
     }
   }, [user]);
+
+  React.useEffect(() => {
+    fetchRooms();
+  }, []);
 
   const [body, setBody] = React.useState([
     {
@@ -61,9 +75,20 @@ function AddRoom() {
       })
     );
   }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    addRooms(body);
+    setBody([{
+      roomNumber: "",
+      capacity: "",
+      location: ""
+    }]);
+  }
+
   return (
     <section className="min-h-screen min-w-screen">
-      <form>
+      <form onSubmit={handleSubmit}>
         <Card className="w-5/6 md:w-3/5 mx-auto dark:bg-card bg-zinc-100 mt-10">
           <CardHeader>
             <CardTitle className="text-2xl">Rooms</CardTitle>
@@ -100,7 +125,18 @@ function AddRoom() {
                           />
                         </td>
                         <td>
-                          <Select>
+                          <Select
+                            onValueChange={(value: string) =>
+                              setBody(
+                                body.map((room) => {
+                                  if (room === body[index]) {
+                                    room.location = value;
+                                  }
+                                  return room;
+                                })
+                              )
+                            }
+                          >
                             <SelectTrigger>
                               <SelectValue placeholder="Location" />
                             </SelectTrigger>
@@ -166,31 +202,69 @@ function AddRoom() {
             >
               Cancel
             </Button>
-            <Button type="submit" size="lg">
+            <Button
+              type="submit"
+              size="lg"
+              disabled={
+                body[0].roomNumber.length === 0 ||
+                body[0].capacity.length === 0 ||
+                body[0].location.length === 0
+              }
+            >
               Add
             </Button>
           </CardFooter>
         </Card>
       </form>
-      <h1 className="my-4 text-center text-2xl">Available Rooms</h1>
+      <h1 className="mt-4 text-center text-2xl">Available Rooms</h1>
       <Table className="mx-auto w-5/6 md:w-3/5 my-6">
         <TableHeader>
           <TableRow>
             <TableHead>Room Number</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Sitting Capacity</TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rooms.length ? rooms.map((room, index) => {
-            return (
-              <TableRow key={index}>
-                <TableCell>{room.roomNumber}</TableCell>
-                <TableCell>{room.capacity}</TableCell>
-                <TableCell>{room.location}</TableCell>
-              </TableRow>
-            );
-          }): (
+          {rooms.length ? (
+            rooms.map((room, index) => {
+              return (
+                <TableRow key={index}>
+                  <TableCell>{room.roomNumber}</TableCell>
+                  <TableCell>{room.capacity}</TableCell>
+                  <TableCell>{room.location}</TableCell>
+                  <TableCell>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="icon" variant="destructive">
+                          <Trash2 />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you sure you want to delete room?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteRoom(room._id)}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          ) : (
             <TableRow>
               <TableCell colSpan={3}>No rooms</TableCell>
             </TableRow>

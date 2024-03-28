@@ -11,11 +11,13 @@ import { Input } from "./ui/input";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
 import { useUser } from "@/context/UserProvider";
+import { CheckboxDemo } from "./CheckboxDemo";
 
 function Login() {
   const { loginUser, loading, user } = useUser();
   const navigate = useNavigate();
   const [creds, setCreds] = React.useState({ email: "", password: "" });
+  const [showPwd, setShowPwd] = React.useState(false);
 
   React.useEffect(() => {
     if (user._id) {
@@ -38,7 +40,7 @@ function Login() {
           <CardHeader>
             <CardTitle className="text-2xl text-center">Login</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <div className="space-y-1">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -55,11 +57,17 @@ function Login() {
               <Input
                 id="password"
                 placeholder="Password"
-                type="password"
+                type={showPwd ? "text" : "password"}
                 value={creds.password}
                 onChange={(e) =>
                   setCreds({ ...creds, password: e.target.value })
                 }
+              />
+              <CheckboxDemo
+                text="Show Password"
+                value={"showpwd"}
+                name="show-password"
+                handleChange={() => setShowPwd(!showPwd)}
               />
             </div>
           </CardContent>

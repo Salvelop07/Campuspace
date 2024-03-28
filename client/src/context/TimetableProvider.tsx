@@ -5,9 +5,9 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
 interface ClassInterface {
-  allotedRoom: string;
+  allotedRoom: {roomNumber: string};
   allotedTime: string;
-  teacher: string;
+  teacher: {fullName: string};
   paperId: string;
   subject: string;
   day: string;
@@ -190,7 +190,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTimetable(res.data.data);
-          console.log(res.data.data);
           navigateTo ? navigate(navigateTo) : "";
           toast.success("Timetable found", {
             id: toastLoading,

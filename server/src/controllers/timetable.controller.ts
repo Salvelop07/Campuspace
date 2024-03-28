@@ -97,7 +97,12 @@ const getTimetable = asyncHandler(async (req: Request, res: Response) => {
     select: "fullName",
     model: "user",
     strictPopulate: false,
-  });
+  }).populate({
+    path: "classes.allotedRoom",
+    select: "roomNumber",
+    model: "room",
+    strictPopulate: false
+  })
 
   if (!timetable) {
     throw new ApiError(404, "Timetable not found");

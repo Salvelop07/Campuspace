@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useUser } from "./UserProvider";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface RoomInterface {
   _id: string;
@@ -15,7 +16,7 @@ interface Context {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   rooms: RoomInterface[];
   setRooms: React.Dispatch<React.SetStateAction<RoomInterface[]>>;
-  addRoom: Function;
+  addRooms: Function;
   deleteRoom: Function;
   fetchRooms: Function;
   bookRoom: Function;
@@ -27,7 +28,7 @@ const initialState = {
   rooms: [],
   setRooms: () => null,
   fetchRooms: () => null,
-  addRoom: () => null,
+  addRooms: () => null,
   deleteRoom: () => null,
   bookRoom: () => null,
 };
@@ -35,7 +36,7 @@ const initialState = {
 const RoomContext = React.createContext<Context>(initialState);
 
 export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { accessToken } = useUser();
 
   const [rooms, setRooms] = React.useState<RoomInterface[]>([]);
@@ -55,43 +56,67 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function addRoom(rooms: RoomInterface[], navigateTo?: string) {
+  async function addRooms(roomsAdded: RoomInterface[], navigateTo?: string) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .post("/api/v1/room", rooms, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
+      .post(
+        "/api/v1/room/new",
+        { rooms: roomsAdded },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.success) {
-          setRooms([...rooms, res.data.data]);
+          setRooms([...rooms, ...res.data.data]);
+          console.log(res.data.data)
+          toast.success("Rooms added successfully", {
+            id: toastLoading,
+          });
           navigateTo ? navigate(navigateTo) : "";
         }
       })
-      .catch((err) => console.warn(err.message))
+      .catch((err) => {
+        console.warn(err.response.data);
+        toast.error(err.response.data.message || "Something broke!", {
+          id: toastLoading,
+        });
+      })
       .finally(() => setLoading(false));
   }
 
   async function deleteRoom(roomId: string, navigateTo?: string) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .delete(`/api/v1/room/${roomId}`, {
+      .delete(`/api/v1/room/delete/${roomId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
         if (res.data.success) {
-          setRooms(rooms.filter((room) => room.roomNumber !== roomId));
+          setRooms(rooms.filter((room) => room._id !== roomId));
+          toast.success("Room deleted successfully", {
+            id: toastLoading,
+          });
           navigateTo ? navigate(navigateTo) : "";
         }
       })
-      .catch((err) => console.warn(err.message))
+      .catch((err) => {
+        console.warn(err);
+        toast.error("Something broke!", {
+          id: toastLoading,
+        });
+      })
       .finally(() => setLoading(false));
   }
 
   async function bookRoom(roomId: string, navigateTo?: string) {
+    const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
       .post(`/api/v1/room/book/${roomId}`, {
@@ -101,11 +126,18 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
-          console.log(res.data.data);
+          toast.success("Room booked successully", {
+            id: toastLoading,
+          });
           navigateTo ? navigate(navigateTo) : "";
         }
       })
-      .catch((err) => console.warn(err.message))
+      .catch((err) => {
+        console.warn(err.message);
+        toast.error("Something broke!", {
+          id: toastLoading,
+        });
+      })
       .finally(() => setLoading(false));
   }
 
@@ -117,7 +149,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
         setLoading,
         setRooms,
         fetchRooms,
-        addRoom,
+        addRooms,
         deleteRoom,
         bookRoom,
       }}

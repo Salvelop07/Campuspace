@@ -53,7 +53,7 @@ const addRooms = asyncHandler(async (req: Request, res: Response) => {
     !rooms[0].capacity ||
     !rooms[0].location
   ) {
-    throw new ApiError(400, "Rooms required");
+    throw new ApiError(400, "Rooms are required");
   }
   const roomNumbers = rooms.map(
     (room: { roomNumber: string; capacity: number; location: string }) =>

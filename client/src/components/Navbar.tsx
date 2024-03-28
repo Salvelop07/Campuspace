@@ -264,7 +264,7 @@ function Navbar() {
             }}
             className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"
           >
-            Add Room
+            Rooms
           </Button>
         </li>
         <li>

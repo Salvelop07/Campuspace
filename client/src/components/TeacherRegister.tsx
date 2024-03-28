@@ -31,6 +31,7 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "@/context/UserProvider";
+import { CheckboxDemo } from "./CheckboxDemo";
 
 function TeacherRegister() {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ function TeacherRegister() {
     email: "",
     password: "",
   });
+  const [showPwd, setShowPwd] = React.useState(false)
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -93,11 +95,17 @@ function TeacherRegister() {
               <Input
                 id="password"
                 placeholder="Password"
-                type="password"
+                type={showPwd ? "text": "password"}
                 value={creds.password}
                 onChange={(e) =>
                   setCreds({ ...creds, password: e.target.value })
                 }
+              />
+              <CheckboxDemo
+                text="Show Password"
+                value={"showpwd"}
+                name="show-password"
+                handleChange={() => setShowPwd(!showPwd)}
               />
             </div>
           </CardContent>

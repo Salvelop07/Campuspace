@@ -23,12 +23,10 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import { useUser } from "@/context/UserProvider";
 import { useTimetable } from "@/context/TimetableProvider";
 import React from "react";
 
 function Timetable() {
-  const { days } = useUser();
   const { timetable, courses, getCourses, getTimetable } = useTimetable();
 
   const [body, setBody] = React.useState({
@@ -38,16 +36,16 @@ function Timetable() {
   });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    getTimetable(body.stream, body.course, body.semester)
+    e.preventDefault();
+    getTimetable(body.stream, body.course, body.semester);
   }
-  
+
   return (
     <section className="min-h-screen min-w-screen">
       <form onSubmit={handleSubmit}>
         <Card className="w-4/5 md:w-3/5 mx-auto my-6 bg-zinc-100 dark:bg-card">
           <CardHeader>
-            <CardTitle className="text-xl text-center">Timetable</CardTitle>
+            <CardTitle className="text-2xl text-center">Timetable</CardTitle>
             <CardDescription>View coursewise timetable</CardDescription>
           </CardHeader>
           <CardContent>
@@ -84,8 +82,8 @@ function Timetable() {
                   </SelectTrigger>
                   <SelectContent position="popper">
                     {courses.length ? (
-                      courses.map((course) => {
-                        return <SelectItem value={course}>{course}</SelectItem>;
+                      courses.map((course, index) => {
+                        return <SelectItem value={course} key={index}>{course}</SelectItem>;
                       })
                     ) : (
                       <SelectItem value="na" disabled>
@@ -123,7 +121,9 @@ function Timetable() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-evenly">
-            <Button type="submit">View</Button>
+            <Button type="submit" size="lg">
+              View
+            </Button>
           </CardFooter>
         </Card>
       </form>
@@ -131,9 +131,11 @@ function Timetable() {
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
             <TableHead>Time</TableHead>
-            {days.map((day, index) => {
-              return <TableHead key={index}>{day}</TableHead>;
-            })}
+            <TableHead>Day</TableHead>
+            <TableHead>Subject</TableHead>
+            <TableHead>Room</TableHead>
+            <TableHead>Teacher</TableHead>
+            <TableHead>Paper Id</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -142,13 +144,16 @@ function Timetable() {
               return (
                 <TableRow
                   key={index}
-                  className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                  className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800 min-w-20"
                 >
                   <TableCell>
-                    {cls.allotedTime.split("-")?.join(" - ")}
+                    {cls.allotedTime.split("-").join("AM - ")}PM
                   </TableCell>
-                  <TableCell>{cls.allotedTime}</TableCell>
+                  <TableCell>{cls.day}</TableCell>
                   <TableCell>{cls.subject}</TableCell>
+                  <TableCell>{cls.allotedRoom?.roomNumber}</TableCell>
+                  <TableCell>{cls.teacher?.fullName}</TableCell>
+                  <TableCell>{cls.paperId}</TableCell>
                 </TableRow>
               );
             })
