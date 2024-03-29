@@ -10,7 +10,6 @@ import { Button } from "./ui/button";
 import { Bookmark } from "lucide-react";
 import { useRoom } from "../context/RoomProvider";
 import { useUser } from "@/context/UserProvider";
-import { toast } from "sonner";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +20,6 @@ export function BookRoom() {
 
   React.useEffect(() => {
     if (!user._id) {
-      toast("Please login again");
       navigate("/login");
     } else {
       if (!user.isAdmin) navigate("/bookroom");

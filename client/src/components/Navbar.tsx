@@ -158,8 +158,7 @@ function Navbar() {
       <ul
         className={`flex flex-col absolute transition-transform duration-300 z-10 border-b-2 border-gray-300 dark:border-gray-700 w-full " 
       ${openNav ? "-translate-y-0" : "-translate-y-64"} ${
-          location.pathname.includes("/admin") ||
-          location.pathname.includes("/teacher")
+          location.pathname.includes("/admin")
             ? "hidden"
             : ""
         }`}
