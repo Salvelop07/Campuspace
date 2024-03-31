@@ -50,17 +50,17 @@ const initialState = {
   teachersAbsent: [],
   tokenKey: "",
   loading: false,
-  setLoading: () => {},
-  setTeachers: () => {},
-  getTeachersAbsent: () => {},
-  addTeachersAbsent: () => {},
-  setUser: () => {},
-  loginUser: () => {},
-  fetchUser: () => {},
-  deleteUser: () => {},
-  changeAdmin: () => {},
-  getAllTeachers: () => {},
-  registerTeacher: () => {},
+  setLoading: () => { },
+  setTeachers: () => { },
+  getTeachersAbsent: () => { },
+  addTeachersAbsent: () => { },
+  setUser: () => { },
+  loginUser: () => { },
+  fetchUser: () => { },
+  deleteUser: () => { },
+  changeAdmin: () => { },
+  getAllTeachers: () => { },
+  registerTeacher: () => { },
 };
 
 const UserContext = React.createContext<Context>(initialState);
@@ -107,7 +107,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     []
   );
 
-  async function fetchUser(navigateTo?: string) {
+  async function fetchUser() {
     if (!accessToken) return console.log("No token");
     setLoading(true);
     axios
@@ -119,7 +119,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setUser(res.data.data);
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -131,7 +130,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   async function loginUser(
     email: string,
     password: string,
-    navigateTo?: string
   ) {
     setLoading(true);
     const toastLoading = toast.loading("Please wait...");
@@ -145,9 +143,13 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           localStorage.setItem(tokenKey, res.data.data.accessToken);
           setUser(res.data.data.user);
           accessToken = res.data.data.accessToken;
+          if (res.data.data.user.isAdmin) {
+            navigate("/admin/teachersabsent")
+          } else {
+            navigate("/bookroom")
+          }
           fetchUser();
           toast.success("Logged in successfully", { id: toastLoading });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -158,7 +160,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteUser(teacherId: string, navigateTo?: string) {
+  async function deleteUser(teacherId: string,) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -173,7 +175,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success(res.data.message, {
             id: toastLoading
           })
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -184,7 +185,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function changeAdmin(teacherId: string, navigateTo?: string) {
+  async function changeAdmin(teacherId: string,) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -205,7 +206,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
             }
           });
           toast.success(res.data.message, { id: toastLoading });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -216,7 +216,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getAllTeachers(navigateTo?: string) {
+  async function getAllTeachers() {
     setLoading(true);
     axios
       .get("/api/v1/users")
@@ -227,7 +227,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
               (teacher: UserInterface) => teacher._id !== user._id
             )
           );
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
@@ -238,7 +237,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     fullName: string,
     email: string,
     password: string,
-    navigateTo?: string
+
   ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
@@ -262,7 +261,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Teacher registered successfully", {
             id: toastLoading,
           });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -273,7 +271,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getTeachersAbsent(navigateTo?: string) {
+  async function getTeachersAbsent() {
     setLoading(true);
     axios
       .get("/api/v1/teachersabsent", {
@@ -292,14 +290,13 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
               }
             )
           );
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function addTeachersAbsent(teacherIds: string[], navigateTo?: string) {
+  async function addTeachersAbsent(teacherIds: string[],) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -330,7 +327,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Absent teacher added successfully", {
             id: toastLoading,
           });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>

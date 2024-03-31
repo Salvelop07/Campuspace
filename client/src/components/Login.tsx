@@ -31,7 +31,6 @@ function Login() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     await loginUser(creds.email, creds.password);
-    // navigate("/admin/teachersabsent");
   }
 
   return (

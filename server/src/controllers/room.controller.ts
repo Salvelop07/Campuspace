@@ -26,7 +26,7 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
     return room
   })
 
-  if (!rooms.length) {
+  if (!rooms || !rooms.length) {
     throw new ApiError(404, "No empty rooms found")
   }
 

@@ -1,7 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { useUser } from "./UserProvider";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface RoomInterface {
@@ -20,6 +19,7 @@ interface Context {
   deleteRoom: Function;
   fetchRooms: Function;
   bookRoom: Function;
+  fetchVacantRooms: Function;
 }
 
 const initialState = {
@@ -31,32 +31,48 @@ const initialState = {
   addRooms: () => null,
   deleteRoom: () => null,
   bookRoom: () => null,
+  fetchVacantRooms: () => null
 };
 
 const RoomContext = React.createContext<Context>(initialState);
 
 export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
-  const navigate = useNavigate();
   const { accessToken } = useUser();
 
   const [rooms, setRooms] = React.useState<RoomInterface[]>([]);
   const [loading, setLoading] = React.useState(false);
 
-  async function fetchRooms(navigateTo?: string) {
+  async function fetchRooms() {
     setLoading(true);
     axios
       .get("/api/v1/room")
       .then((res) => {
         if (res.data.success) {
           setRooms(res.data.data);
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
       .finally(() => setLoading(false));
   }
 
-  async function addRooms(roomsAdded: RoomInterface[], navigateTo?: string) {
+  async function fetchVacantRooms() {
+    const date = new Date;
+    const hours = date.getHours() > 12 ? date.getHours() - 12: date.getHours()
+    const time = `${hours - 1}.30-${hours}.30`
+    setLoading(true);
+    axios
+      .get(`/api/v1/room/vacant?time=${time}`)
+      .then((res) => {
+        if (res.data.success) {
+          console.log(res.data)
+          setRooms(res.data.data);
+        }
+      })
+      .catch((err) => console.warn(err.message))
+      .finally(() => setLoading(false));
+  }
+
+  async function addRooms(roomsAdded: RoomInterface[]) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -76,7 +92,6 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Rooms added successfully", {
             id: toastLoading,
           });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => {
@@ -88,7 +103,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteRoom(roomId: string, navigateTo?: string) {
+  async function deleteRoom(roomId: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -103,7 +118,6 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Room deleted successfully", {
             id: toastLoading,
           });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => {
@@ -115,7 +129,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function bookRoom(roomId: string, navigateTo?: string) {
+  async function bookRoom(roomId: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -129,7 +143,6 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
           toast.success("Room booked successully", {
             id: toastLoading,
           });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => {
@@ -149,6 +162,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
         setLoading,
         setRooms,
         fetchRooms,
+        fetchVacantRooms,
         addRooms,
         deleteRoom,
         bookRoom,

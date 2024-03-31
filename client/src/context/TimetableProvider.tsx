@@ -2,12 +2,11 @@ import React from "react";
 import axios from "axios";
 import { useUser } from "./UserProvider";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 interface ClassInterface {
-  allotedRoom: {roomNumber: string};
+  allotedRoom: { roomNumber: string };
   allotedTime: string;
-  teacher: {fullName: string};
+  teacher: { fullName: string };
   paperId: string;
   subject: string;
   day: string;
@@ -48,21 +47,20 @@ const initialState = {
   courses: [],
   timetables: [],
   loading: false,
-  setLoading: () => {},
-  setCourses: () => {},
-  setTimetable: () => {},
-  setTimetables: () => {},
-  getAllTimetables: () => {},
-  getTimetable: () => {},
-  getCourses: () => {},
-  addTimetable: () => {},
-  deleteTimetable: () => {},
+  setLoading: () => { },
+  setCourses: () => { },
+  setTimetable: () => { },
+  setTimetables: () => { },
+  getAllTimetables: () => { },
+  getTimetable: () => { },
+  getCourses: () => { },
+  addTimetable: () => { },
+  deleteTimetable: () => { },
 };
 
 const TimetableContext = React.createContext<Context>(initialState);
 
 function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
-  const navigate = useNavigate();
   const { accessToken } = useUser();
 
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -79,7 +77,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
 
   const [timetables, setTimetables] = React.useState<TimetableInterface[]>([]);
 
-  async function getAllTimetables(navigateTo?: string) {
+  async function getAllTimetables() {
     setLoading(true);
     axios
       .get("/api/v1/timetable/all", {
@@ -90,7 +88,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTimetables(res.data.data);
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
@@ -99,7 +96,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
 
   async function addTimetable(
     timetable: TimetableInterface,
-    navigateTo?: string
+
   ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
@@ -113,7 +110,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
         if (res.data.success) {
           setTimetables([...timetables, res.data.data]);
           toast.success("Timetable added successfully", { id: toastLoading });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -124,7 +120,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteTimetable(timetableId: string, navigateTo?: string) {
+  async function deleteTimetable(timetableId: string,) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -139,7 +135,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
             timetables.filter((timetable) => timetable._id !== timetableId)
           );
           toast.success("Timetable deleted successfully", { id: toastLoading });
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) =>
@@ -150,7 +145,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getCourses(stream: string, navigateTo?: string) {
+  async function getCourses(stream: string,) {
     setLoading(true);
     axios
       .get(`/api/v1/timetable/courses?stream=${stream}`, {
@@ -161,7 +156,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setCourses(res.data.data);
-          navigateTo ? navigate(navigateTo) : "";
         }
       })
       .catch((err) => console.warn(err.message))
@@ -172,7 +166,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
     stream: string,
     course: string,
     semester: string,
-    navigateTo?: string
+
   ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
@@ -190,7 +184,6 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTimetable(res.data.data);
-          navigateTo ? navigate(navigateTo) : "";
           toast.success("Timetable found", {
             id: toastLoading,
           });

@@ -17,10 +17,10 @@ export interface RoomInterface {
 }
 
 export function VacantRooms() {
-  const { rooms, fetchRooms } = useRoom();
+  const { rooms, fetchVacantRooms } = useRoom();
 
   React.useEffect(() => {
-    fetchRooms();
+    fetchVacantRooms();
   }, [])
 
   return (
