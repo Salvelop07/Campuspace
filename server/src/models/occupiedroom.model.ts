@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { TimeTable } from "./timetable.model";
+import { Room } from "./room.model";
 
 interface RoomOccupiedInterface extends mongoose.Document {
   room: string;
@@ -7,7 +7,7 @@ interface RoomOccupiedInterface extends mongoose.Document {
 }
 
 interface RoomOccupiedModel extends mongoose.Model<RoomOccupiedInterface> {
-  isRoomAvailable(time: string, roomId: string): Promise<{ rooms: string[] }[]>
+  isRoomAvailable(time: string, roomId: string): Promise<boolean>
 }
 
 const roomOccupiedSchema = new mongoose.Schema(
@@ -34,29 +34,8 @@ const roomOccupiedSchema = new mongoose.Schema(
 );
 
 roomOccupiedSchema.statics.isRoomAvailable = async function (time: string, roomId: string) {
-  const occupiedRooms = await TimeTable.aggregate(
+  const freeRooms = await Room.aggregate(
     [
-      {
-        $match: {
-          "classes.allotedTime": time,
-        },
-      },
-      {
-        $group: {
-          _id: "$classes.allotedRoom",
-        },
-      },
-      {
-        $unwind: "$_id",
-      },
-      {
-        $group: {
-          _id: null,
-          room: {
-            $addToSet: { $toString: "$_id" },
-          },
-        },
-      },
       {
         $lookup: {
           from: "occupiedrooms",
@@ -68,7 +47,7 @@ roomOccupiedSchema.statics.isRoomAvailable = async function (time: string, roomI
             },
             {
               $project: {
-                room: { $toString: "$room" },
+                roomId: { $toString: "$room" },
                 _id: 0,
               },
             },
@@ -77,21 +56,84 @@ roomOccupiedSchema.statics.isRoomAvailable = async function (time: string, roomI
         },
       },
       {
+        $lookup: {
+          from: "timetables",
+          pipeline: [
+            {
+              $match: {
+                "classes.allotedTime": time,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                rooms: "$classes.allotedRoom",
+              },
+            },
+            {
+              $addFields: {
+                rooms: {
+                  $map: {
+                    input: "$rooms",
+                    as: "item",
+                    in: { $toString: "$$item" },
+                  },
+                },
+              },
+            },
+          ],
+          as: "timetable",
+        },
+      },
+      {
         $project: {
-          _id: 0,
           rooms: {
-            $concatArrays: [
-              "$room",
-              "$occupiedrooms.room",
-            ],
+            $reduce: {
+              input: "$timetable.rooms",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this"],
+              },
+            },
+          },
+          _id: { $toString: "$_id" },
+          roomNumber: 1,
+          capacity: 1,
+          location: 1,
+          occupiedrooms: {
+            $map: {
+              input: "$occupiedrooms",
+              as: "item",
+              in: "$$item.roomId",
+            },
           },
         },
       },
+      {
+        $match: {
+          $expr: {
+            $not: {
+              "$in": ["$_id", { $concatArrays: ["$rooms", "$occupiedrooms"] }],
+            }
+          },
+        },
+      },
+      {
+        $project: {
+          rooms: 0,
+          occupiedrooms: 0
+        }
+      }
     ]
   )
-  if(occupiedRooms.length === 0 || occupiedRooms[0].rooms.includes(roomId)){
+  if (freeRooms.length === 0) {
     return false
   }
+  freeRooms.map((room) => {
+    if (room._id.toString() === roomId) {
+      return false
+    }
+  })
   return true
 }
 

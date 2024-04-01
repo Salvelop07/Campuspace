@@ -21,10 +21,98 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Time is required");
   }
 
-  const vacantRooms = await Room.getOccupiedRooms(time)
-  const rooms = vacantRooms[0]?.rooms.map((room) => {
-    return room
-  })
+  const rooms = await Room.aggregate(
+    [
+      {
+        $lookup: {
+          from: "occupiedrooms",
+          pipeline: [
+            {
+              $match: {
+                time,
+              },
+            },
+            {
+              $project: {
+                roomId: { $toString: "$room" },
+                _id: 0,
+              },
+            },
+          ],
+          as: "occupiedrooms",
+        },
+      },
+      {
+        $lookup: {
+          from: "timetables",
+          pipeline: [
+            {
+              $match: {
+                "classes.allotedTime": time,
+              },
+            },
+            {
+              $project: {
+                _id: 0,
+                rooms: "$classes.allotedRoom",
+              },
+            },
+            {
+              $addFields: {
+                rooms: {
+                  $map: {
+                    input: "$rooms",
+                    as: "item",
+                    in: { $toString: "$$item" },
+                  },
+                },
+              },
+            },
+          ],
+          as: "timetable",
+        },
+      },
+      {
+        $project: {
+          rooms: {
+            $reduce: {
+              input: "$timetable.rooms",
+              initialValue: [],
+              in: {
+                $concatArrays: ["$$value", "$$this"],
+              },
+            },
+          },
+          _id: { $toString: "$_id" },
+          roomNumber: 1,
+          capacity: 1,
+          location: 1,
+          occupiedrooms: {
+            $map: {
+              input: "$occupiedrooms",
+              as: "item",
+              in: "$$item.roomId",
+            },
+          },
+        },
+      },
+      {
+        $match: {
+          $expr: {
+            $not: {
+              "$in": ["$_id", { $concatArrays: ["$rooms", "$occupiedrooms"] }],
+            }
+          },
+        },
+      },
+      {
+        $project: {
+          rooms: 0,
+          occupiedrooms: 0
+        }
+      }
+    ]
+  )
 
   if (!rooms || !rooms.length) {
     throw new ApiError(404, "No empty rooms found")
