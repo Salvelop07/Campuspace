@@ -25,7 +25,7 @@ const bookRoom = asyncHandler(async (req: Request, res: Response) => {
     occupiedBy: _id,
     room: roomId,
     time
-  });
+  })
 
   if (!roomOccupied) {
     throw new ApiError(400, "Room not booked");
@@ -42,11 +42,11 @@ const unbookRoom = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const { _id } = req.user;
-  const { roomId } = req.body;
+  const { bookingId } = req.params;
 
-  const bookedRoom = await RoomOccupied.findOne({ room: roomId, occupiedBy: _id })
+  const bookedRoom = await RoomOccupied.findById(bookingId)
   if (!bookedRoom) {
-    throw new ApiError(404, "Invalid booking")
+    throw new ApiError(404, "Invalid booking ID")
   }
 
   const isAuthorized = bookedRoom.occupiedBy.toString() === _id.toString()
@@ -64,14 +64,14 @@ const unbookRoom = asyncHandler(async (req: Request, res: Response) => {
 const getBookedRooms = asyncHandler(async (req: Request, res: Response) => {
   const { time, teacherId } = req.query;
 
-  let conditions: { time?: string, bookedBy?: string } = {}
+  let conditions: { time?: string, occupiedBy?: string } = {}
 
   if (time && typeof time === "string") {
     conditions.time = time
   }
 
   if (teacherId && typeof teacherId === "string") {
-    conditions.bookedBy = teacherId
+    conditions.occupiedBy = teacherId
   }
 
   const bookedRooms = await RoomOccupied.find(conditions)

@@ -15,7 +15,7 @@ router.route("/new").post(addRooms);
 
 router.route("/book").post(bookRoom);
 
-router.route("/unbook").delete(unbookRoom);
+router.route("/unbook/:bookingId").delete(unbookRoom);
 
 router.route("/getbooked").get(getBookedRooms);
 

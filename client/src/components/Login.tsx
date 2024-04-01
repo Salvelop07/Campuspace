@@ -22,9 +22,13 @@ function Login() {
   React.useEffect(() => {
     if (user._id) {
       if (user.isAdmin) {
-        return navigate("/admin/teachersabsent");
+        console.log("User is admin")
+        navigate("/admin/teachersabsent");
       }
-      navigate("/bookroom");
+      else {
+        console.log("User is admin")
+        navigate("/bookroom");
+      }
     }
   }, [user]);
 
