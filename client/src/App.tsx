@@ -10,7 +10,6 @@ import ErrorPage from "./components/ErrorPage";
 import Timetable from "./components/Timetable";
 import TeacherRegister from "./components/TeacherRegister";
 import Footer from "./components/Footer";
-import { useEffect } from "react";
 import AddRoom from "./components/AddRoom";
 import { Toaster } from "./components/ui/sonner";
 import { useTheme } from "./context/ThemeProvider";
@@ -18,11 +17,6 @@ import { BookRoom } from "./components/BookRoom";
 
 function App() {
   const { theme } = useTheme();
-  useEffect(() => {
-    document
-      .getElementById("root")
-      ?.classList.add("min-h-screen", "min-w-screen");
-  });
   return (
     <>
       <Navbar />

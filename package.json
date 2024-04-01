@@ -1,14 +1,24 @@
 {
   "name": "college-project",
   "version": "1.0.0",
-  "description": "",
+  "description": "Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.",
   "main": "index.js",
   "scripts": {
     "build": "npm i --include=dev && npx tsc && cd client && npm i --include=dev && npm run build",
     "dev": "nodemon server/index.ts",
     "start": "node --env-file=.env dist/index.js"
   },
-  "keywords": [],
+  "keywords": [
+    "express",
+    "typescript",
+    "mongoose",
+    "axios",
+    "bcrypt",
+    "mern",
+    "jsonwebtoken",
+    "tailwindcss",
+    "shadcn-ui"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -22,7 +32,6 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/mongoose": "^5.11.97",
-    "@types/multer": "^1.4.11",
     "@types/node": "^20.11.24",
     "@types/nodemon": "^1.19.6",
     "nodemon": "^3.1.0",

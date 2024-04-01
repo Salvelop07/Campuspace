@@ -50,17 +50,17 @@ const initialState = {
   teachersAbsent: [],
   tokenKey: "",
   loading: false,
-  setLoading: () => { },
-  setTeachers: () => { },
-  getTeachersAbsent: () => { },
-  addTeachersAbsent: () => { },
-  setUser: () => { },
-  loginUser: () => { },
-  fetchUser: () => { },
-  deleteUser: () => { },
-  changeAdmin: () => { },
-  getAllTeachers: () => { },
-  registerTeacher: () => { },
+  setLoading: () => {},
+  setTeachers: () => {},
+  getTeachersAbsent: () => {},
+  addTeachersAbsent: () => {},
+  setUser: () => {},
+  loginUser: () => {},
+  fetchUser: () => {},
+  deleteUser: () => {},
+  changeAdmin: () => {},
+  getAllTeachers: () => {},
+  registerTeacher: () => {},
 };
 
 const UserContext = React.createContext<Context>(initialState);
@@ -87,8 +87,13 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     "3.30-4.30",
     "4.30-5.30",
   ];
-  const tokenKey = "arsd-college-accessToken";
+  const tokenKey = "campus-space-accessToken";
   let accessToken = localStorage.getItem(tokenKey) || "";
+  const title = import.meta.env.VITE_COLLEGE_NAME;
+
+  React.useEffect(() => {
+    document.title = title || "Campus Space";
+  }, [title]);
 
   const date = new Date();
   const day = days[date.getDay()];
@@ -127,10 +132,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function loginUser(
-    email: string,
-    password: string,
-  ) {
+  async function loginUser(email: string, password: string) {
     setLoading(true);
     const toastLoading = toast.loading("Please wait...");
     axios
@@ -144,9 +146,9 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
           setUser(res.data.data.user);
           accessToken = res.data.data.accessToken;
           if (res.data.data.user.isAdmin) {
-            navigate("/admin/teachersabsent")
+            navigate("/admin/teachersabsent");
           } else {
-            navigate("/bookroom")
+            navigate("/bookroom");
           }
           fetchUser();
           toast.success("Logged in successfully", { id: toastLoading });
@@ -160,7 +162,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteUser(teacherId: string,) {
+  async function deleteUser(teacherId: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -173,8 +175,8 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         if (res.data.success) {
           setTeachers(teachers.filter((usr) => usr._id !== teacherId));
           toast.success(res.data.message, {
-            id: toastLoading
-          })
+            id: toastLoading,
+          });
         }
       })
       .catch((err) =>
@@ -185,7 +187,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function changeAdmin(teacherId: string,) {
+  async function changeAdmin(teacherId: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -236,8 +238,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   async function registerTeacher(
     fullName: string,
     email: string,
-    password: string,
-
+    password: string
   ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
@@ -296,7 +297,7 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function addTeachersAbsent(teacherIds: string[],) {
+  async function addTeachersAbsent(teacherIds: string[]) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios

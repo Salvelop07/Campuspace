@@ -11,6 +11,8 @@ function Navbar() {
   const [openNav, setOpenNav] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const title = import.meta.env.VITE_COLLEGE_NAME;
+
   return (
     <>
       <nav className="flex flex-row justify-between items-center px-4 h-16 relative z-20 border-b-2 border-gray-300 dark:border-gray-600 bg-zinc-200 dark:bg-zinc-800">
@@ -27,7 +29,7 @@ function Navbar() {
           </Button>
           <Link to="/" className="flex flex-row gap-2 items-center">
             <img src={logo} alt="" className="w-10 object-contain" />
-            <span>ARSD College</span>
+            <span>{title || "Campus Space"}</span>
           </Link>
           <span
             className={
@@ -158,9 +160,7 @@ function Navbar() {
       <ul
         className={`flex flex-col absolute transition-transform duration-300 z-10 border-b-2 border-gray-300 dark:border-gray-700 w-full " 
       ${openNav ? "-translate-y-0" : "-translate-y-64"} ${
-          location.pathname.includes("/admin")
-            ? "hidden"
-            : ""
+          location.pathname.includes("/admin") ? "hidden" : ""
         }`}
       >
         <li>
