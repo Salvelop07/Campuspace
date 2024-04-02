@@ -75,7 +75,6 @@ function TimetableAdmin() {
     getAllTimetables();
     fetchRooms();
   }, []);
-
   const [body, setBody] = React.useState<BodyInterface>({
     course: "",
     semester: "",
@@ -116,9 +115,25 @@ function TimetableAdmin() {
       classes,
     });
   }
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    addTimetable(body)
+    await addTimetable(body)
+    setBody({
+    course: "",
+    semester: "",
+    stream: "",
+    classes: [
+      {
+        allotedRoom: "",
+        allotedTime: "",
+        teacher: "",
+        paperId: "",
+        subject: "",
+        day: "",
+      },
+    ],
+  });
+
   }
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setBody({
@@ -126,6 +141,7 @@ function TimetableAdmin() {
       [e.target.name]: e.target.value,
     });
   }
+
   function handleClassChange(e: React.ChangeEvent<HTMLInputElement>) {
     const index = e.target.parentElement?.parentElement?.dataset.index;
     if (!index) return console.log("Index not found");
@@ -218,9 +234,9 @@ function TimetableAdmin() {
                     <SelectValue placeholder="Stream" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="arts">Arts</SelectItem>
-                    <SelectItem value="science">Science</SelectItem>
-                    <SelectItem value="commerce">Commerce</SelectItem>
+                    <SelectItem value="Arts">Arts</SelectItem>
+                    <SelectItem value="Science">Science</SelectItem>
+                    <SelectItem value="Commerce">Commerce</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -468,7 +484,7 @@ function TimetableAdmin() {
                   key={index}
                   className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
                 >
-                  <TableCell>{timetable.stream}</TableCell>
+                  <TableCell className="capitalize">{timetable.stream}</TableCell>
                   <TableCell className="text-ellipsis">
                     {timetable.course}
                   </TableCell>

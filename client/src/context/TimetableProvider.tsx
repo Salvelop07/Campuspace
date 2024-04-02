@@ -47,21 +47,21 @@ const initialState = {
   courses: [],
   timetables: [],
   loading: false,
-  setLoading: () => { },
-  setCourses: () => { },
-  setTimetable: () => { },
-  setTimetables: () => { },
-  getAllTimetables: () => { },
-  getTimetable: () => { },
-  getCourses: () => { },
-  addTimetable: () => { },
-  deleteTimetable: () => { },
+  setLoading: () => {},
+  setCourses: () => {},
+  setTimetable: () => {},
+  setTimetables: () => {},
+  getAllTimetables: () => {},
+  getTimetable: () => {},
+  getCourses: () => {},
+  addTimetable: () => {},
+  deleteTimetable: () => {},
 };
 
 const TimetableContext = React.createContext<Context>(initialState);
 
 function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
-  const { accessToken } = useUser();
+  const { accessToken, days, timeslots } = useUser();
 
   const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -76,6 +76,28 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
   });
 
   const [timetables, setTimetables] = React.useState<TimetableInterface[]>([]);
+
+  function customSort(
+    item1: { day: string; allotedTime: string },
+    item2: { day: string; allotedTime: string }
+  ) {
+
+    if (!item1.hasOwnProperty("day") || !item2.hasOwnProperty("day")) {
+      return "";
+    }
+    if (
+      !item1.hasOwnProperty("allotedTime") ||
+      !item2.hasOwnProperty("allotedTime")
+    ) {
+      return "";
+    }
+
+    const dayComparison = days.indexOf(item1.day) - days.indexOf(item2.day);
+    if (dayComparison !== 0) {
+      return dayComparison;
+    }
+    return timeslots.indexOf(item1.allotedTime) - timeslots.indexOf(item2.allotedTime);
+  }
 
   async function getAllTimetables() {
     setLoading(true);
@@ -94,10 +116,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function addTimetable(
-    timetable: TimetableInterface,
-
-  ) {
+  async function addTimetable(timetable: TimetableInterface) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -120,7 +139,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function deleteTimetable(timetableId: string,) {
+  async function deleteTimetable(timetableId: string) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
@@ -145,7 +164,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function getCourses(stream: string,) {
+  async function getCourses(stream: string) {
     setLoading(true);
     axios
       .get(`/api/v1/timetable/courses?stream=${stream}`, {
@@ -165,8 +184,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
   async function getTimetable(
     stream: string,
     course: string,
-    semester: string,
-
+    semester: string
   ) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
@@ -183,6 +201,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
       })
       .then((res) => {
         if (res.data.success) {
+          res.data.data.classes.sort(customSort)
           setTimetable(res.data.data);
           toast.success("Timetable found", {
             id: toastLoading,

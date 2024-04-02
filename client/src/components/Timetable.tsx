@@ -83,7 +83,11 @@ function Timetable() {
                   <SelectContent position="popper">
                     {courses.length ? (
                       courses.map((course, index) => {
-                        return <SelectItem value={course} key={index}>{course}</SelectItem>;
+                        return (
+                          <SelectItem value={course} key={index}>
+                            {course}
+                          </SelectItem>
+                        );
                       })
                     ) : (
                       <SelectItem value="na" disabled>
@@ -127,10 +131,10 @@ function Timetable() {
           </CardFooter>
         </Card>
       </form>
-      <Table className="mx-auto w-5/6 md:w-3/5 my-4 bg-zinc-100 dark:bg-zinc-900">
+      <Table className="mx-auto md:w-5/6 w-full my-4 bg-zinc-100 dark:bg-zinc-900">
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
-            <TableHead>Time</TableHead>
+            <TableHead className="min-w-12">Time</TableHead>
             <TableHead>Day</TableHead>
             <TableHead>Subject</TableHead>
             <TableHead>Room</TableHead>

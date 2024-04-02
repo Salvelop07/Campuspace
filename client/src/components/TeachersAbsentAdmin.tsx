@@ -53,10 +53,10 @@ function TeachersAbsentAdmin() {
     setBody([...body, teacher._id]);
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    addTeachersAbsent(body);
-    setBody([])
+    await addTeachersAbsent(body);
+    setBody([]);
   }
 
   return (

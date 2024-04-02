@@ -322,8 +322,9 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
               }
             ),
           ]);
+          console.log(res.data.data)
           setTeachers(
-            teachers.filter((teacher) => teacherIds.includes(teacher._id))
+            teachers.filter((teacher) => !teacherIds.includes(teacher._id))
           );
           toast.success("Absent teacher added successfully", {
             id: toastLoading,
