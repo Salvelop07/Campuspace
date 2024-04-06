@@ -47,24 +47,23 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
           from: "timetables",
           pipeline: [
             {
+              $unwind: "$classes",
+            },
+            {
               $match: {
-                "classes.allotedTime": time,
+                $expr: {
+                  $ne: [
+                    "$classes.allotedTime",
+                    time,
+                  ],
+                },
               },
             },
             {
-              $project: {
-                _id: 0,
-                rooms: "$classes.allotedRoom",
-              },
-            },
-            {
-              $addFields: {
+              $group: {
+                _id: "$_id",
                 rooms: {
-                  $map: {
-                    input: "$rooms",
-                    as: "item",
-                    in: { $toString: "$$item" },
-                  },
+                  $addToSet: { $toString: "$classes.allotedRoom" }
                 },
               },
             },
@@ -100,17 +99,25 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
         $match: {
           $expr: {
             $not: {
-              "$in": ["$_id", { $concatArrays: ["$rooms", "$occupiedrooms"] }],
-            }
+              $in: [
+                "$_id",
+                {
+                  $concatArrays: [
+                    "$rooms",
+                    "$occupiedrooms",
+                  ],
+                },
+              ],
+            },
           },
         },
       },
       {
         $project: {
           rooms: 0,
-          occupiedrooms: 0
-        }
-      }
+          occupiedrooms: 0,
+        },
+      },
     ]
   )
 

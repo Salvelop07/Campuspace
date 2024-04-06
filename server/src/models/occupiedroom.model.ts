@@ -60,24 +60,23 @@ roomOccupiedSchema.statics.isRoomAvailable = async function (time: string, roomI
           from: "timetables",
           pipeline: [
             {
+              $unwind: "$classes",
+            },
+            {
               $match: {
-                "classes.allotedTime": time,
+                $expr: {
+                  $ne: [
+                    "$classes.allotedTime",
+                    time,
+                  ],
+                },
               },
             },
             {
-              $project: {
-                _id: 0,
-                rooms: "$classes.allotedRoom",
-              },
-            },
-            {
-              $addFields: {
+              $group: {
+                _id: "$_id",
                 rooms: {
-                  $map: {
-                    input: "$rooms",
-                    as: "item",
-                    in: { $toString: "$$item" },
-                  },
+                  $addToSet: { $toString: "$classes.allotedRoom" }
                 },
               },
             },
@@ -113,17 +112,25 @@ roomOccupiedSchema.statics.isRoomAvailable = async function (time: string, roomI
         $match: {
           $expr: {
             $not: {
-              "$in": ["$_id", { $concatArrays: ["$rooms", "$occupiedrooms"] }],
-            }
+              $in: [
+                "$_id",
+                {
+                  $concatArrays: [
+                    "$rooms",
+                    "$occupiedrooms",
+                  ],
+                },
+              ],
+            },
           },
         },
       },
       {
         $project: {
           rooms: 0,
-          occupiedrooms: 0
-        }
-      }
+          occupiedrooms: 0,
+        },
+      },
     ]
   )
   if (freeRooms.length === 0) {
