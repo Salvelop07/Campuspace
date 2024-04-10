@@ -31,7 +31,6 @@
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.24",
     "@types/nodemon": "^1.19.6",
     "nodemon": "^3.1.0",

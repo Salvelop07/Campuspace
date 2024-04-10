@@ -20,13 +20,18 @@ interface TimetableInterface {
   classes: ClassInterface[];
 }
 
+interface Course {
+  semester: number[],
+  course: string
+}
+
 interface Context {
   timetable: TimetableInterface;
   timetables: TimetableInterface[];
-  courses: string[];
+  courses: Course[];
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  setCourses: React.Dispatch<React.SetStateAction<string[]>>;
+  setCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   setTimetable: React.Dispatch<React.SetStateAction<TimetableInterface>>;
   setTimetables: React.Dispatch<React.SetStateAction<TimetableInterface[]>>;
   addTimetable: Function;
@@ -65,7 +70,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
 
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  const [courses, setCourses] = React.useState<string[]>([]);
+  const [courses, setCourses] = React.useState<Course[]>([]);
 
   const [timetable, setTimetable] = React.useState<TimetableInterface>({
     _id: "",

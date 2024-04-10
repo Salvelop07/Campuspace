@@ -35,6 +35,17 @@ function Timetable() {
     semester: "",
   });
 
+  const [semester, setSemester] = React.useState<number[]>([]);
+  const semesters = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+  React.useEffect(() => {
+    courses.map((course) => {
+      if (course.course === body.course) {
+        return setSemester(course.semester);
+      }
+    });
+  }, [body.course]);
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     getTimetable(body.stream, body.course, body.semester);
@@ -84,8 +95,8 @@ function Timetable() {
                     {courses.length ? (
                       courses.map((course, index) => {
                         return (
-                          <SelectItem value={course} key={index}>
-                            {course}
+                          <SelectItem value={course.course} key={index}>
+                            {course.course}
                           </SelectItem>
                         );
                       })
@@ -111,14 +122,17 @@ function Timetable() {
                     <SelectValue placeholder="Semester" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">I</SelectItem>
-                    <SelectItem value="2">II</SelectItem>
-                    <SelectItem value="3">III</SelectItem>
-                    <SelectItem value="4">IV</SelectItem>
-                    <SelectItem value="5">V</SelectItem>
-                    <SelectItem value="6">VI</SelectItem>
-                    <SelectItem value="7">VII</SelectItem>
-                    <SelectItem value="8">VIII</SelectItem>
+                    {semester.length ? (
+                      semester.map((sem, index) => {
+                        return (
+                          <SelectItem value={sem.toString()} key={index}>
+                            {semesters[sem - 1]}
+                          </SelectItem>
+                        );
+                      })
+                    ) : (
+                      <SelectItem value="0">No semester</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>

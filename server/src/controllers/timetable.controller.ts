@@ -73,7 +73,22 @@ const getCourses = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Stream is required");
   }
 
-  const courses = await TimeTable.find({ stream }).distinct("course");
+  const courses = await TimeTable.aggregate([
+    { $match: { stream } },
+    {
+      $group: {
+        _id: "$course",
+        semester: { $addToSet: "$semester" },
+      },
+    },
+    {
+      $project: {
+        course: "$_id",
+        semester: 1,
+        _id: 0
+      }
+    }
+  ]);
 
   if (!courses || !courses.length) {
     throw new ApiError(404, "Courses not found");
