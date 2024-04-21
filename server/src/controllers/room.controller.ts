@@ -21,8 +21,7 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
     throw new ApiError(400, "Time is required");
   }
 
-  const rooms = await Room.aggregate(
-    [
+  const rooms = await Room.aggregate([
       {
         $lookup: {
           from: "occupiedrooms",
@@ -46,24 +45,19 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
         $lookup: {
           from: "timetables",
           pipeline: [
-            {
-              $unwind: "$classes",
-            },
+            { $unwind: "$classes" },
             {
               $match: {
-                $expr: {
-                  $ne: [
-                    "$classes.allotedTime",
-                    time,
-                  ],
-                },
+                "classes.allotedTime": time,
               },
             },
             {
               $group: {
-                _id: "$_id",
+                _id: null,
                 rooms: {
-                  $addToSet: { $toString: "$classes.allotedRoom" }
+                  $addToSet: {
+                    $toString: "$classes.allotedRoom",
+                  },
                 },
               },
             },
@@ -118,8 +112,7 @@ const getVacantRooms = asyncHandler(async (req: Request, res: Response) => {
           occupiedrooms: 0,
         },
       },
-    ]
-  )
+    ])
 
   if (!rooms || !rooms.length) {
     throw new ApiError(404, "No empty rooms found")

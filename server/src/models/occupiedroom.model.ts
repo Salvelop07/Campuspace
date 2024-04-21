@@ -34,105 +34,98 @@ const roomOccupiedSchema = new mongoose.Schema(
 );
 
 roomOccupiedSchema.statics.isRoomAvailable = async function (time: string, roomId: string) {
-  const freeRooms = await Room.aggregate(
-    [
-      {
-        $lookup: {
-          from: "occupiedrooms",
-          pipeline: [
-            {
-              $match: {
-                time,
-              },
+  const freeRooms = await Room.aggregate([
+    {
+      $lookup: {
+        from: "occupiedrooms",
+        pipeline: [
+          {
+            $match: {
+              time,
             },
-            {
-              $project: {
-                roomId: { $toString: "$room" },
-                _id: 0,
-              },
+          },
+          {
+            $project: {
+              roomId: { $toString: "$room" },
+              _id: 0,
             },
-          ],
-          as: "occupiedrooms",
-        },
+          },
+        ],
+        as: "occupiedrooms",
       },
-      {
-        $lookup: {
-          from: "timetables",
-          pipeline: [
-            {
-              $unwind: "$classes",
+    },
+    {
+      $lookup: {
+        from: "timetables",
+        pipeline: [
+          { $unwind: "$classes" },
+          {
+            $match: {
+              "classes.allotedTime": time,
             },
-            {
-              $match: {
-                $expr: {
-                  $ne: [
-                    "$classes.allotedTime",
-                    time,
-                  ],
+          },
+          {
+            $group: {
+              _id: null,
+              rooms: {
+                $addToSet: {
+                  $toString: "$classes.allotedRoom",
                 },
               },
             },
-            {
-              $group: {
-                _id: "$_id",
-                rooms: {
-                  $addToSet: { $toString: "$classes.allotedRoom" }
-                },
+          },
+        ],
+        as: "timetable",
+      },
+    },
+    {
+      $project: {
+        rooms: {
+          $reduce: {
+            input: "$timetable.rooms",
+            initialValue: [],
+            in: {
+              $concatArrays: ["$$value", "$$this"],
+            },
+          },
+        },
+        _id: { $toString: "$_id" },
+        roomNumber: 1,
+        capacity: 1,
+        location: 1,
+        occupiedrooms: {
+          $map: {
+            input: "$occupiedrooms",
+            as: "item",
+            in: "$$item.roomId",
+          },
+        },
+      },
+    },
+    {
+      $match: {
+        $expr: {
+          $not: {
+            $in: [
+              "$_id",
+              {
+                $concatArrays: [
+                  "$rooms",
+                  "$occupiedrooms",
+                ],
               },
-            },
-          ],
-          as: "timetable",
-        },
-      },
-      {
-        $project: {
-          rooms: {
-            $reduce: {
-              input: "$timetable.rooms",
-              initialValue: [],
-              in: {
-                $concatArrays: ["$$value", "$$this"],
-              },
-            },
-          },
-          _id: { $toString: "$_id" },
-          roomNumber: 1,
-          capacity: 1,
-          location: 1,
-          occupiedrooms: {
-            $map: {
-              input: "$occupiedrooms",
-              as: "item",
-              in: "$$item.roomId",
-            },
+            ],
           },
         },
       },
-      {
-        $match: {
-          $expr: {
-            $not: {
-              $in: [
-                "$_id",
-                {
-                  $concatArrays: [
-                    "$rooms",
-                    "$occupiedrooms",
-                  ],
-                },
-              ],
-            },
-          },
-        },
+    },
+    {
+      $project: {
+        rooms: 0,
+        occupiedrooms: 0,
       },
-      {
-        $project: {
-          rooms: 0,
-          occupiedrooms: 0,
-        },
-      },
-    ]
-  )
+    },
+  ])
   if (freeRooms.length === 0) {
     return false
   }

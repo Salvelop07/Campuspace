@@ -104,7 +104,7 @@ function TeachersAbsentAdmin() {
           </CardFooter>
         </Card>
       </form>
-      <Table className="mx-auto md:w-3/5 w-4/5">
+      <Table className="mx-auto md:w-3/5 w-4/5 mb-2">
         <TableHeader>
           <TableRow>
             <TableHead>Teacher</TableHead>
