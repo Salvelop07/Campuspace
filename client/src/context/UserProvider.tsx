@@ -68,6 +68,7 @@ const UserContext = React.createContext<Context>(initialState);
 export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   const location = useLocation();
   const navigate = useNavigate();
+  const logoLink: string | undefined = import.meta.env.VITE_LOGO;
   const days = [
     "Monday",
     "Tuesday",
@@ -93,7 +94,14 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
 
   React.useEffect(() => {
     document.title = title || "Campus Space";
-  }, [title]);
+    const link: HTMLLinkElement | null =
+      document.querySelector("link[rel~='icon']");
+    if (link && logoLink) {
+      link.href = logoLink;
+    } else if (link) {
+      link.href = "/logo.svg";
+    }
+  }, [title, logoLink]);
 
   const date = new Date();
   const day = days[date.getDay()];
@@ -225,9 +233,14 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTeachers(
-            res.data.data.filter(
-              (teacher: UserInterface) => teacher._id !== user._id
-            )
+            res.data.data
+              .filter((teacher: UserInterface) => teacher._id !== user._id)
+              .sort(function (
+                teacher1: UserInterface,
+                teacher2: UserInterface
+              ) {
+                return teacher1.fullName.localeCompare(teacher2.fullName);
+              })
           );
         }
       })
@@ -273,6 +286,11 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
   }
 
   async function getTeachersAbsent() {
+    interface TeacherInterface {
+      fullName: string;
+      email: string;
+      _id: string;
+    }
     setLoading(true);
     axios
       .get("/api/v1/teachersabsent", {
@@ -283,13 +301,17 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setTeachersAbsent(
-            res.data.data.map(
-              (teacher: {
-                teacher: { fullName: string; email: string; _id: string };
-              }) => {
-                return teacher.teacher;
-              }
-            )
+            res.data.data
+              .map(
+                (teacher: {
+                  teacher: TeacherInterface;
+                }) => {
+                  return teacher.teacher;
+                }
+              )
+              .sort((teacher1: TeacherInterface, teacher2: TeacherInterface) =>
+                teacher1.fullName.localeCompare(teacher2.fullName)
+              )
           );
         }
       })
@@ -322,7 +344,6 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
               }
             ),
           ]);
-          console.log(res.data.data)
           setTeachers(
             teachers.filter((teacher) => !teacherIds.includes(teacher._id))
           );

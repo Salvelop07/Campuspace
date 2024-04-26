@@ -25,7 +25,15 @@ import {
 
 export function BookRoom() {
   const { user } = useUser();
-  const { rooms, fetchVacantRooms, bookRoom, unbookRoom, bookedRoom, getBookedRooms } = useRoom();
+  const {
+    rooms,
+    fetchVacantRooms,
+    bookRoom,
+    unbookRoom,
+    bookedRoom,
+    getBookedRooms,
+    time,
+  } = useRoom();
 
   React.useEffect(() => {
     fetchVacantRooms();
@@ -34,8 +42,18 @@ export function BookRoom() {
 
   return (
     <section className="min-h-screen">
-      <h1 className={`text-center text-3xl my-4 ${bookedRoom._id.length > 0 ? "hidden" : ""}`}>Vacant Rooms</h1>
-      <Table className={`mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900 ${bookedRoom._id.length > 0 ? "hidden" : ""}`}>
+      <h1
+        className={`text-center text-3xl my-4 ${
+          bookedRoom._id.length > 0 ? "hidden" : ""
+        }`}
+      >
+        Vacant Rooms
+      </h1>
+      <Table
+        className={`mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900 ${
+          bookedRoom._id.length > 0 ? "hidden" : ""
+        }`}
+      >
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
             <TableHead>Room</TableHead>
@@ -58,27 +76,33 @@ export function BookRoom() {
                   <TableCell>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="default"
-                          title="Book room"
-                        >
+                        <Button size="icon" variant="default" title="Book room">
                           <CalendarPlus />
                         </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            Are you sure you want to book the room {roomNumber} ?
+                            Are you sure you want to book the room {roomNumber}{" "}
+                            ?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
-                            You will not be able to book further rooms for current hour, if you change your mind you will have to unbook this room?
+                            You will not be able to book further rooms for
+                            current hour, if you change your mind you will have
+                            to unbook this room?
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => bookRoom({ _id, roomNumber, capacity, location })}
+                            onClick={() =>
+                              bookRoom({
+                                _id,
+                                roomNumber,
+                                capacity,
+                                location,
+                              })
+                            }
                           >
                             Confirm
                           </AlertDialogAction>
@@ -96,8 +120,18 @@ export function BookRoom() {
           )}
         </TableBody>
       </Table>
-      <h1 className={`text-center text-3xl my-4 ${bookedRoom._id.length > 0 ? "" : "hidden"}`}>Booked Rooms</h1>
-      <Table className={`mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900 ${bookedRoom._id.length > 0 ? "" : "hidden"} `}>
+      <h1
+        className={`text-center text-3xl my-4 ${
+          bookedRoom._id.length > 0 ? "" : "hidden"
+        }`}
+      >
+        Booked Rooms
+      </h1>
+      <Table
+        className={`mx-auto w-5/6 md:w-3/5 my-6 bg-zinc-100 dark:bg-zinc-900 ${
+          bookedRoom._id.length > 0 ? "" : "hidden"
+        } `}
+      >
         <TableHeader>
           <TableRow className="hover:bg-zinc-200 dark:hover:bg-zinc-800">
             <TableHead>Room</TableHead>
@@ -108,37 +142,32 @@ export function BookRoom() {
         </TableHeader>
         <TableBody>
           {bookedRoom._id.length ? (
-            <TableRow
-              className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
-            >
+            <TableRow className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800">
               <TableCell>{bookedRoom.room.roomNumber}</TableCell>
               <TableCell>{bookedRoom.room.capacity}</TableCell>
               <TableCell>{bookedRoom.room.location}</TableCell>
               <TableCell>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="default"
-                      title="Book room"
-                    >
+                    <Button size="icon" variant="default" title="Book room">
                       <CalendarMinus />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Are you sure you want to unbook the room {bookedRoom.room.roomNumber} ?
+                        Are you sure you want to unbook the room{" "}
+                        {bookedRoom.room.roomNumber} ?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        By doing this, You will be able to book further rooms for current hour, if you change your mind you have to book this room again?
+                        By doing this, You will be able to book further rooms
+                        for current hour, if you change your mind you have to
+                        book this room again?
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => unbookRoom(bookedRoom)}
-                      >
+                      <AlertDialogAction onClick={() => unbookRoom(bookedRoom)}>
                         Continue
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -153,6 +182,11 @@ export function BookRoom() {
           )}
         </TableBody>
       </Table>
+      {time === "closed" && (
+        <p className="text-red-600 text-xl text-center font-bold animate-pulse mx-auto">
+          College is closed, Rooms cannot be booked.
+        </p>
+      )}
     </section>
   );
 }

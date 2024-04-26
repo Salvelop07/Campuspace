@@ -82,6 +82,7 @@ function TeachersAbsentAdmin() {
                             <CheckboxDemo
                               text={teacher.fullName}
                               value={teacher._id}
+                              title={teacher.email}
                               handleChange={handleChange}
                               name="teacher"
                             />

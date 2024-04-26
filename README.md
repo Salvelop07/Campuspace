@@ -41,6 +41,10 @@ To run this project, you will need to add the following environment variables to
 
 `NODE_ENV`
 
-> If you want to change the name of the college edit the env.production file in the client folder
+> If you want to change the name of the college, image or footer links edit the env.production file in the client folder
 
 `VITE_COLLEGE_NAME`
+`VITE_TWITTER`
+`VITE_GITHUB`
+`VITE_LINKEDIN`
+`VITE_LOGO`

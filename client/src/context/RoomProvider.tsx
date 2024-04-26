@@ -19,6 +19,7 @@ interface BookedRoomInterface {
 
 interface Context {
   loading: boolean;
+  time: string;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   rooms: RoomInterface[];
   bookedRoom: BookedRoomInterface;
@@ -37,7 +38,13 @@ const initialState = {
   loading: false,
   setLoading: () => null,
   rooms: [],
-  bookedRoom: { room: { roomNumber: "", capacity: 0, location: "", _id: "" }, time: "", occupiedBy: "", _id: "" },
+  bookedRoom: {
+    room: { roomNumber: "", capacity: 0, location: "", _id: "" },
+    time: "",
+    occupiedBy: "",
+    _id: "",
+  },
+  time: "",
   setRooms: () => null,
   fetchRooms: () => null,
   addRooms: () => null,
@@ -46,7 +53,7 @@ const initialState = {
   bookRoom: () => null,
   unbookRoom: () => null,
   fetchVacantRooms: () => null,
-  getBookedRooms: () => null
+  getBookedRooms: () => null,
 };
 
 const RoomContext = React.createContext<Context>(initialState);
@@ -63,13 +70,37 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       roomNumber: "",
       capacity: 0,
       location: "",
-      _id: ""
-    }
-  })
+      _id: "",
+    },
+  });
   const [loading, setLoading] = React.useState(false);
-  const date = new Date;
-  const hours = date.getHours() > 12 ? date.getHours() - 11 : date.getHours()
-  const time = `${hours - 1}.30-${hours}.30`
+  const date = new Date();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  let time: string;
+  if (hours > 8 && hours < 18) {
+    if (hours < 12) {
+      if (minutes < 30) {
+        time = `${hours - 1}.30-${hours}.30`;
+      } else {
+        time = `${hours}.30-${hours + 1}.30`;
+      }
+    } else if (hours === 12) {
+      if (minutes < 30) {
+        time = `11.30-12.30`;
+      } else {
+        time = `12.30-1.30`;
+      }
+    } else {
+      if (minutes < 30) {
+        time = `${hours - 13 === 0 ? 12 : hours - 13}.30-${hours - 12}.30`;
+      } else {
+        time = `${hours - 12}.30-${hours - 11}.30`;
+      }
+    }
+  } else {
+    time = `closed`;
+  }
 
   async function fetchRooms() {
     setLoading(true);
@@ -84,13 +115,20 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .finally(() => setLoading(false));
   }
 
-  async function fetchVacantRooms() {
+  async function fetchVacantRooms(time?: string) {
+    if (time === "closed" || !time) {
+      return console.log("Invalid time");
+    }
     setLoading(true);
     axios
       .get(`/api/v1/room/vacant?time=${time}`)
       .then((res) => {
         if (res.data.success) {
-          setRooms(res.data.data);
+          setRooms(
+            res.data.data.sort((a: RoomInterface, b: RoomInterface) =>
+              b.location.charAt(3).localeCompare(a.location.charAt(3))
+            )
+          );
         }
       })
       .catch((err) => console.warn(err.message))
@@ -113,7 +151,6 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
       .then((res) => {
         if (res.data.success) {
           setRooms([...rooms, ...res.data.data]);
-          console.log(res.data.data)
           toast.success(res.data.message, {
             id: toastLoading,
           });
@@ -132,12 +169,11 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .delete(`/api/v1/room/delete/${roomId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
+      .delete(`/api/v1/room/delete/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
       .then((res) => {
         if (res.data.success) {
           setRooms(rooms.filter((room) => room._id !== roomId));
@@ -156,20 +192,32 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
   }
 
   async function bookRoom(room: RoomInterface) {
+    if (time === "closed") {
+      return console.log("Invalid time");
+    }
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .post(`/api/v1/room/book`,
+      .post(
+        `/api/v1/room/book`,
         { roomId: room._id, time },
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        })
+        }
+      )
       .then((res) => {
         if (res.data.success) {
-          setBookedRoom({ _id: res.data.data._id, room, time: res.data.data.time, occupiedBy: res.data.data.occupiedBy })
-          setRooms((rooms) => rooms.filter((roomEle) => roomEle._id !== room._id))
+          setBookedRoom({
+            _id: res.data.data._id,
+            room,
+            time: res.data.data.time,
+            occupiedBy: res.data.data.occupiedBy,
+          });
+          setRooms((rooms) =>
+            rooms.filter((roomEle) => roomEle._id !== room._id)
+          );
           toast.success(res.data.message, {
             id: toastLoading,
           });
@@ -188,12 +236,11 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
     const toastLoading = toast.loading("Please wait...");
     setLoading(true);
     axios
-      .delete(`/api/v1/room/unbook/${bookedRoom._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
+      .delete(`/api/v1/room/unbook/${bookedRoom._id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
       .then((res) => {
         if (res.data.success) {
           setBookedRoom({
@@ -201,13 +248,13 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
               roomNumber: "",
               capacity: 0,
               location: "",
-              _id: ""
+              _id: "",
             },
             time: "",
             occupiedBy: "",
-            _id: ""
-          })
-          setRooms((rooms) => [...rooms, bookedRoom.room])
+            _id: "",
+          });
+          setRooms((rooms) => [...rooms, bookedRoom.room]);
           toast.success(res.data.message, {
             id: toastLoading,
           });
@@ -223,21 +270,23 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
   }
 
   async function getBookedRooms(teacherId?: string) {
+    if (time === "closed") {
+      return console.log("Invalid time");
+    }
     setLoading(true);
     axios
-      .get(`/api/v1/room/getbooked`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: {
-            teacherId,
-            time
-          },
-        })
+      .get(`/api/v1/room/getbooked`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          teacherId,
+          time,
+        },
+      })
       .then((res) => {
         if (res.data.success) {
-          setBookedRoom(res.data.data[0])
+          setBookedRoom(res.data.data[0]);
         }
       })
       .catch((err) => console.warn(err.message))
@@ -248,6 +297,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
     <RoomContext.Provider
       value={{
         rooms,
+        time,
         bookedRoom,
         loading,
         setLoading,
@@ -259,7 +309,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
         deleteRoom,
         bookRoom,
         unbookRoom,
-        getBookedRooms
+        getBookedRooms,
       }}
     >
       {children}

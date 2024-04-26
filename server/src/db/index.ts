@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connectDB = async () => {
   try {
     const connectionInstance = await mongoose.connect(
-      `${process.env.MONGODB_URI as string}/arsdcollege`
+      `${process.env.MONGODB_URI as string}/${process.env.COLLEGE_NAME?.replace(/\s/g, "") ?? "campus-space"}`
     );
     console.log("MongoDb Connected:", connectionInstance.connection.host);
   } catch (err) {

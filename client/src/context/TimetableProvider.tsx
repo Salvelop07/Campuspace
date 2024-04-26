@@ -217,7 +217,7 @@ function TimetableProvider({ children }: React.PropsWithChildren<{}>) {
         toast.error("Something broke!", {
           id: toastLoading,
         });
-        console.log(err);
+        console.warn(err);
       })
       .finally(() => setLoading(false));
   }

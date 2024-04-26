@@ -12,6 +12,8 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const title = import.meta.env.VITE_COLLEGE_NAME;
+  const logoLink = import.meta.env.VITE_LOGO;
+  logoLink ? logoLink : logo;
 
   return (
     <>
@@ -28,7 +30,7 @@ function Navbar() {
             {openNav ? <X /> : <Equal />}
           </Button>
           <Link to="/" className="flex flex-row gap-2 items-center">
-            <img src={logo} alt="" className="w-10 object-contain" />
+            <img src={logoLink ? logoLink : logo} alt="" className="w-10 object-contain" />
             <span>{title || "Campus Space"}</span>
           </Link>
           <span
@@ -109,7 +111,7 @@ function Navbar() {
               onClick={() => navigate("/admin/timetable")}
               className="hidden md:flex dark:hover:bg-zinc-700"
             >
-              New Timetable
+              Timetable
             </Button>
           </li>
           <li>
@@ -227,7 +229,7 @@ function Navbar() {
             }}
             className="md:hidden w-full rounded-none py-5 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 hover:dark:bg-zinc-600"
           >
-            New Timetable
+            Timetable
           </Button>
         </li>
         <li>
