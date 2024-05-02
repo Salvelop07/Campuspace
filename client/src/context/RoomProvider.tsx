@@ -77,8 +77,11 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
   const date = new Date();
   const hours = date.getHours();
   const minutes = date.getMinutes();
+  const day = date.getDay();
   let time: string;
-  if (hours > 8 && hours < 18) {
+  if (day === 6) {
+    time = "closed";
+  } else if (hours > 8 && hours < 18) {
     if (hours < 12) {
       if (minutes < 30) {
         time = `${hours - 1}.30-${hours}.30`;
@@ -98,8 +101,10 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
         time = `${hours - 12}.30-${hours - 11}.30`;
       }
     }
+  } else if (hours === 8 && minutes >= 30) {
+    time = "8.30-9.30";
   } else {
-    time = `closed`;
+    time = "closed";
   }
 
   async function fetchRooms() {
