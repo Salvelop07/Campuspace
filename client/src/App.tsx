@@ -20,7 +20,7 @@ function App() {
   return (
     <>
       <Navbar />
-      <Toaster richColors closeButton theme={theme} />
+      <Toaster richColors theme={theme} />
       <Routes>
         <Route element={<Login />} path="/login" />
         <Route element={<TimetableAdmin />} path="/admin/timetable" />

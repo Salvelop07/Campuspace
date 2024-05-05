@@ -59,9 +59,11 @@ export interface ClassInterface {
 
 function TimetableAdmin() {
   const navigate = useNavigate();
-  const { timeslots, teachers, days, user } = useUser();
+  const { timeslots, teachers, days, user, getAllTeachers } = useUser();
   const { rooms, fetchRooms } = useRoom();
-  const { timetables, getAllTimetables, deleteTimetable, addTimetable } = useTimetable();
+  const { timetables, getAllTimetables, deleteTimetable, addTimetable } =
+    useTimetable();
+  const [btnDisabled, setBtnDisabled] = React.useState(true);
 
   React.useEffect(() => {
     if (!user._id) {
@@ -74,7 +76,9 @@ function TimetableAdmin() {
   React.useEffect(() => {
     getAllTimetables();
     fetchRooms();
+    getAllTeachers();
   }, []);
+
   const [body, setBody] = React.useState<BodyInterface>({
     course: "",
     semester: "",
@@ -90,6 +94,37 @@ function TimetableAdmin() {
       },
     ],
   });
+
+  React.useEffect(() => {
+    if (
+      body.semester.length <= 0 ||
+      body.stream.length <= 0 ||
+      body.course.length <= 3
+    ) {
+      return setBtnDisabled(true);
+    }
+    body.classes.map(function ({
+      allotedTime,
+      allotedRoom,
+      paperId,
+      teacher,
+      subject,
+      day,
+    }) {
+      if (
+        allotedRoom.length <= 0 ||
+        allotedTime.length <= 0 ||
+        paperId.length <= 4 ||
+        subject.length <= 2 ||
+        day.length <= 4 ||
+        teacher.length <= 6
+      ) {
+        return setBtnDisabled(true);
+      }
+      setBtnDisabled(false);
+    });
+  }, [body]);
+
   function IncreaseClasses() {
     const classes = [
       ...body.classes,
@@ -117,23 +152,22 @@ function TimetableAdmin() {
   }
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    await addTimetable(body)
+    await addTimetable(body);
     setBody({
-    course: "",
-    semester: "",
-    stream: "",
-    classes: [
-      {
-        allotedRoom: "",
-        allotedTime: "",
-        teacher: "",
-        paperId: "",
-        subject: "",
-        day: "",
-      },
-    ],
-  });
-
+      course: "",
+      semester: "",
+      stream: "",
+      classes: [
+        {
+          allotedRoom: "",
+          allotedTime: "",
+          teacher: "",
+          paperId: "",
+          subject: "",
+          day: "",
+        },
+      ],
+    });
   }
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setBody({
@@ -447,21 +481,7 @@ function TimetableAdmin() {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={
-                body.semester.length === 0 ||
-                body.stream.length === 0 ||
-                body.course.length < 2 ||
-                body.classes[0].allotedRoom.length === 0 ||
-                body.classes[0].allotedTime.length === 0 ||
-                body.classes[0].day.length === 0 ||
-                body.classes[0].paperId.length === 4 ||
-                body.classes[0].subject.length === 4 ||
-                body.classes[0].teacher.length === 0
-              }
-            >
+            <Button type="submit" size="lg" disabled={btnDisabled}>
               Create
             </Button>
           </CardFooter>
@@ -484,7 +504,9 @@ function TimetableAdmin() {
                   key={index}
                   className="w-full hover:bg-zinc-200 dark:hover:bg-zinc-800"
                 >
-                  <TableCell className="capitalize">{timetable.stream}</TableCell>
+                  <TableCell className="capitalize">
+                    {timetable.stream}
+                  </TableCell>
                   <TableCell className="text-ellipsis">
                     {timetable.course}
                   </TableCell>

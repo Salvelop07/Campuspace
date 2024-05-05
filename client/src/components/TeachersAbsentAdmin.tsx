@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { useRoom } from "@/context/RoomProvider";
 
 function TeachersAbsentAdmin() {
   const navigate = useNavigate();
@@ -28,7 +29,9 @@ function TeachersAbsentAdmin() {
     addTeachersAbsent,
     teachersAbsent,
     getTeachersAbsent,
+    setTeachers
   } = useUser();
+  const { time } = useRoom();
 
   React.useEffect(() => {
     if (!user._id) {
@@ -39,8 +42,12 @@ function TeachersAbsentAdmin() {
   }, [user]);
 
   React.useEffect(() => {
-    getAllTeachers();
-    getTeachersAbsent();
+    if (time !== "closed") {
+      getAllTeachers();
+      getTeachersAbsent();
+    } else {
+      setTeachers([]);
+    }
   }, []);
 
   const [body, setBody] = React.useState<string[]>([]);
@@ -74,7 +81,8 @@ function TeachersAbsentAdmin() {
                     if (
                       !teachersAbsent.some(
                         (teacherAbsent) => teacher._id === teacherAbsent._id
-                      ) && !teacher.isAdmin
+                      ) &&
+                      !teacher.isAdmin
                     )
                       return (
                         <tr key={index}>
@@ -105,7 +113,14 @@ function TeachersAbsentAdmin() {
           </CardFooter>
         </Card>
       </form>
-      <Table className="mx-auto md:w-3/5 w-4/5 mb-2">
+      {time === "closed" && (
+        <p className="text-red-600 text-xl font-bold animate-pulse text-center">
+          College is closed
+        </p>
+      )}
+      <Table
+        className={time === "closed" ? "hidden" : "mx-auto md:w-3/5 w-4/5 mb-2"}
+      >
         <TableHeader>
           <TableRow>
             <TableHead>Teacher</TableHead>

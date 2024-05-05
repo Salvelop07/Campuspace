@@ -35,8 +35,15 @@ import { CheckboxDemo } from "./CheckboxDemo";
 
 function TeacherRegister() {
   const navigate = useNavigate();
-  const { user, teachers, deleteUser, changeAdmin, loading, registerTeacher } =
-    useUser();
+  const {
+    user,
+    teachers,
+    deleteUser,
+    changeAdmin,
+    loading,
+    registerTeacher,
+    getAllTeachers,
+  } = useUser();
 
   React.useEffect(() => {
     if (!user._id) {
@@ -45,6 +52,10 @@ function TeacherRegister() {
       if (!user.isAdmin) navigate("/bookroom");
     }
   }, [user]);
+
+  React.useEffect(() => {
+    getAllTeachers();
+  }, []);
 
   const [creds, setCreds] = React.useState({
     fullName: "",

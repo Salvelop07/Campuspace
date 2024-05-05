@@ -79,9 +79,9 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
   const minutes = date.getMinutes();
   const day = date.getDay();
   let time: string;
-  if (day === 6) {
+  if(day === 0) {
     time = "closed";
-  } else if (hours > 8 && hours < 18) {
+  }else if (hours > 8 && hours < 18) {
     if (hours < 12) {
       if (minutes < 30) {
         time = `${hours - 1}.30-${hours}.30`;
@@ -122,6 +122,7 @@ export function RoomProvider({ children }: React.PropsWithChildren<{}>) {
 
   async function fetchVacantRooms(time?: string) {
     if (time === "closed" || !time) {
+      setRooms([]);
       return console.log("Invalid time");
     }
     setLoading(true);

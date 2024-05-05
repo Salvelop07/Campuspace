@@ -43,6 +43,7 @@ function AddRoom() {
   const { rooms, addRooms, fetchRooms, deleteRoom } = useRoom();
   const { user } = useUser();
   const navigate = useNavigate();
+  const [btnDisabled, setBtnDisabled] = React.useState(true);
 
   React.useEffect(() => {
     if (!user._id) {
@@ -63,6 +64,8 @@ function AddRoom() {
       location: "",
     },
   ]);
+
+  
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const index = e.target.parentElement?.parentElement?.dataset.index;
     if (!index) return console.log("Index not found");
@@ -75,16 +78,31 @@ function AddRoom() {
       })
     );
   }
-
+  
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     addRooms(body);
-    setBody([{
-      roomNumber: "",
-      capacity: "",
-      location: ""
-    }]);
+    setBody([
+      {
+        roomNumber: "",
+        capacity: "",
+        location: "",
+      },
+    ]);
   }
+  
+  React.useEffect(() => {
+    body.map(function ({ roomNumber, capacity, location }) {
+      if (
+        roomNumber.length <= 0 ||
+        capacity.length <= 0 ||
+        location.length <= 0
+      ) {
+        return setBtnDisabled(true);
+      }
+      setBtnDisabled(false);
+    });
+  }, [body]);
 
   return (
     <section className="min-h-screen min-w-screen">
@@ -202,15 +220,7 @@ function AddRoom() {
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={
-                body[0].roomNumber.length === 0 ||
-                body[0].capacity.length === 0 ||
-                body[0].location.length === 0
-              }
-            >
+            <Button type="submit" size="lg" disabled={btnDisabled}>
               Add
             </Button>
           </CardFooter>
