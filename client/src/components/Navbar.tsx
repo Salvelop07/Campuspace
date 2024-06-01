@@ -17,8 +17,9 @@ function Navbar() {
 
   return (
     <>
-      <nav className="flex flex-row justify-between items-center px-4 h-16 relative z-20 border-b-2 border-gray-300 dark:border-gray-600 bg-zinc-200 dark:bg-zinc-800">
-        <span className="flex gap-4 items-center">
+      <nav className="flex flex-row justify-between items-center px-4 h-16  sticky top-0 z-20 
+          border-b-2 border-gray-300 dark:border-gray-600  backdrop-blur bg-transparent" 
+          >
           <Button
             size="icon"
             variant="secondary"
