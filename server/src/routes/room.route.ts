@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addRooms, deleteRoom, getRooms, getVacantRooms } from "../controllers/room.controller";
+import { addRooms, deleteRoom, getRooms, getVacantRooms, updateRoom } from "../controllers/room.controller";
 import verifyJWT from "../middlewares/auth.middleware";
 import { bookRoom, getBookedRooms, unbookRoom } from "../controllers/bookroom.controller";
 
@@ -20,5 +20,7 @@ router.route("/unbook/:bookingId").delete(unbookRoom);
 router.route("/getbooked").get(getBookedRooms);
 
 router.route("/delete/:roomId").delete(deleteRoom);
+
+router.route("/update").put(updateRoom);
 
 export default router;

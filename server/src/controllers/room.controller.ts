@@ -185,4 +185,26 @@ const deleteRoom = asyncHandler(async (req: Request, res: Response) => {
     .json(new ApiResponse(200, {}, "Room deleted successfully"));
 });
 
-export { addRooms, deleteRoom, getRooms, getVacantRooms };
+const updateRoom = asyncHandler(async (req: Request, res: Response) => {
+  const { roomId, roomNumber, location, capacity } = req.body;
+  if (!roomId) {
+    throw new ApiError(400, "Room id is required");
+  }
+  if (!roomNumber || !location || !capacity) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const roomExists = await Room.findOne({ _id: roomId });
+  if (!roomExists) {
+    throw new ApiError(400, "Room not found");
+  }
+  const updatedRoom = await Room.findByIdAndUpdate
+    (roomId, { roomNumber, location, capacity }, { new: true });
+  if (!updatedRoom) {
+    throw new ApiError(400, "Room not updated");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Room updated successfully"));
+});
+
+export { addRooms, deleteRoom, getRooms, getVacantRooms, updateRoom };
