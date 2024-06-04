@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.svg";
-import { Copyright, Github, Linkedin } from "lucide-react";
-import { FaXTwitter } from "react-icons/fa6";
+import { Copyright, Github, Linkedin, Twitter } from "lucide-react";
 
 function Footer() {
   const name = import.meta.env.VITE_COLLEGE_NAME;
@@ -77,8 +76,7 @@ function Footer() {
             href={twitterLink ? twitterLink : "https://x.com/sethshivam11"}
             className="flex flex-row items-center justify-center gap-2"
           >
-            <FaXTwitter />
-            Twitter
+            <Twitter /> Twitter
           </a>
         </li>
       </ul>
