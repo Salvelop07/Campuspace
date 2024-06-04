@@ -28,7 +28,6 @@ Start the server
   npm run start
 ```
 
-## Please Visit [Contribution guidelines](CONTRIBUTION.md) for contributing in the project.
 
 ## Environment Variables
 
