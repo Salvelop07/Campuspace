@@ -1,6 +1,15 @@
-# Campus Space
+<a name="top"></a>
+<center>
+<img src = "https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=F7F7F7&random=false&width=435&lines=Campus+Space"> 
+</center>
 
 Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.
+
+## 🏅 Featured in 
+
+<p align="center">
+  <img src="./image.png">
+</p>
 
 ### Run Locally
 
@@ -27,7 +36,22 @@ Start the server
 ```bash
   npm run start
 ```
+## 🔄 Tech Stack
 
+1. **Backend:**
+   - Node.js 💻
+   - Express.js🚀
+
+2. **Frontend:**
+   - React⚛️
+   - React.js🎨
+   - Tailwind CSS🔥
+
+3. **Database***   
+   - MongoDB☁️
+
+4. **Full Stack Integration**   
+   - MERN Stack
 
 ## Environment Variables
 
@@ -52,3 +76,4 @@ To run this project, you will need to add the following environment variables to
 `VITE_LOGO`
 
 * [Click Here](https://github.com/sethshivam11/campus-space/blob/master/client/.env.sample) for Client Side .env.sample file.
+<p align="right"><a href="#top">Back to top</a></p>
