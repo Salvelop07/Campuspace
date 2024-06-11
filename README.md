@@ -76,4 +76,16 @@ To run this project, you will need to add the following environment variables to
 `VITE_LOGO`
 
 * [Click Here](https://github.com/sethshivam11/campus-space/blob/master/client/.env.sample) for Client Side .env.sample file.
+
+
+<hr>
+
+<div>
+  <h2 align = "center"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png" width="35" height="35">Our Contributors</h2>
+  <div align = "center">
+ <h3>Thank you for contributing to our repository</h3>
+
+![Contributors](https://contrib.rocks/image?repo=sethshivam11/campus-space)
+
+### Show some ❤️ by starring this awesome repository!
 <p align="right"><a href="#top">Back to top</a></p>
