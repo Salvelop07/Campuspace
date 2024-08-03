@@ -38,14 +38,7 @@ Start the server
 ```
 ## <h2> 🔄 Tech Stack </h2>
 
-1. <b>**Backend:-**</b>
-  <!-- Node.js -->
-<img src="https://img.shields.io/badge/node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js logo">
-
-<!-- Express.js -->
-<img src="https://img.shields.io/badge/express.js-000000.svg?style=for-the-badge&logo=express&logoColor=white" alt="Express.js logo">
-
-2. <b> **Frontend:** </b>
+1. <b> **Frontend:** </b>
    <!-- React -->
 <img src="https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="React logo">
 
@@ -55,12 +48,18 @@ Start the server
 <!-- Tailwind CSS -->
 <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS logo">
 
+2. <b>**Backend:**</b>
+  <!-- Node.js -->
+<img src="https://img.shields.io/badge/node.js-339933.svg?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js logo">
 
-3. <b> **Database*** </b>  
+<!-- Express.js -->
+<img src="https://img.shields.io/badge/express.js-000000.svg?style=for-the-badge&logo=express&logoColor=white" alt="Express.js logo">
+
+3. <b> **Database:** </b>  
   <!-- MongoDB -->
 <img src="https://img.shields.io/badge/mongodb-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB logo">
 
-4.<b> **Full Stack Integration** </b>   
+4.<b> **Full Stack Integration:** </b>   
   <!-- MERN Stack -->
 <img src="https://img.shields.io/badge/mernstack-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB" alt="MERN Stack logo">
 
