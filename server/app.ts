@@ -41,3 +41,28 @@ if (process.env.NODE_ENV === "production") {
 app.use(errorHandler);
 
 export default app;
+
+// Reload website every 5 minutes (or provided time)
+function reloadWebsite() {
+  fetch((process.env.PUBLIC_URL as string) || "https://campus-space.onrender.com")
+    .then((response) => {
+      console.log(
+        `Reloaded at ${new Date().toLocaleString("en-IN")}: Status Code ${
+          response.status
+        }`
+      );
+    })
+    .catch((error) => {
+      console.error(
+        `Error reloading at ${new Date().toLocaleString("en-IN")}:`,
+        error.message
+      );
+    });
+}
+
+if (process.env.NODE_ENV === "production") {
+  setInterval(
+    reloadWebsite,
+    parseInt(process.env.RELOAD_INTERVAL as string) || 1000 * 60 * 5
+  );
+}
