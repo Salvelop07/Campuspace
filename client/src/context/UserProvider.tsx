@@ -88,12 +88,12 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
     "3.30-4.30",
     "4.30-5.30",
   ];
-  const tokenKey = "campus-space-accessToken";
+  const tokenKey = "Campuspace-accessToken";
   let accessToken = localStorage.getItem(tokenKey) || "";
   const title = import.meta.env.VITE_COLLEGE_NAME;
 
   React.useEffect(() => {
-    document.title = title || "Campus Space";
+    document.title = title || "Campuspace";
     const link: HTMLLinkElement | null =
       document.querySelector("link[rel~='icon']");
     if (link && logoLink) {
@@ -302,13 +302,9 @@ export function UserProvider({ children }: React.PropsWithChildren<{}>) {
         if (res.data.success) {
           setTeachersAbsent(
             res.data.data
-              .map(
-                (teacher: {
-                  teacher: TeacherInterface;
-                }) => {
-                  return teacher.teacher;
-                }
-              )
+              .map((teacher: { teacher: TeacherInterface }) => {
+                return teacher.teacher;
+              })
               .sort((teacher1: TeacherInterface, teacher2: TeacherInterface) =>
                 teacher1.fullName.localeCompare(teacher2.fullName)
               )

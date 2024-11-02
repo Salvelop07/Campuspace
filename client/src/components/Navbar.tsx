@@ -17,9 +17,10 @@ function Navbar() {
 
   return (
     <>
-       <nav className="flex flex-row justify-between items-center px-4 h-16  sticky top-0 z-20 
-          border-b-2 border-gray-300 dark:border-gray-600  backdrop-blur bg-transparent" 
-          >
+      <nav
+        className="flex flex-row justify-between items-center px-4 h-16  sticky top-0 z-20 
+          border-b-2 border-gray-300 dark:border-gray-600  backdrop-blur bg-transparent"
+      >
         <span className="flex gap-4 items-center">
           <Button
             size="icon"
@@ -32,8 +33,12 @@ function Navbar() {
             {openNav ? <X /> : <Equal />}
           </Button>
           <Link to="/" className="flex flex-row gap-2 items-center">
-            <img src={logoLink ? logoLink : logo} alt="" className="w-10 object-contain" />
-            <span>{title || "Campus Space"}</span>
+            <img
+              src={logoLink ? logoLink : logo}
+              alt=""
+              className="w-10 object-contain"
+            />
+            <span>{title || "Campuspace"}</span>
           </Link>
           <span
             className={

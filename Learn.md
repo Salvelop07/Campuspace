@@ -1,7 +1,7 @@
 # Learn.md ✍
-# Campus-Space 🖥️
-Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.
-![image](https://github.com/debangi29/campus-space/assets/117537653/1daa0a8c-5f04-48f8-ae6b-8909e5464a70)
+# Campuspace 🖥️
+Campuspace is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.
+![image](https://github.com/Salvelop07/Campuspace/assets/117537653/1daa0a8c-5f04-48f8-ae6b-8909e5464a70)
 
 
 # Table of Contents 
@@ -32,19 +32,19 @@ Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins mana
 
 ## Contributing 📝
 Raise and issue; Get assigned and then work on fixing the issue.
-We welcome contributions to Campus-Space! Follow these steps to contribute:
+We welcome contributions to Campuspace! Follow these steps to contribute:
 
 1. **Fork the Repository**: Create your own copy of the repository on your GitHub account.
-![image](https://github.com/debangi29/campus-space/assets/117537653/103e7c8d-965b-4f49-a35d-6d8b9ee4373f)
+![image](https://github.com/Salvelop07/Campuspace/assets/117537653/103e7c8d-965b-4f49-a35d-6d8b9ee4373f)
 
 
 2. **Clone the Repository** : Clone the repository for making commits.
    ```bash
-   git clone https://github.com/your-username/Campus-Space.git
+   git clone https://github.com/Salvelop07/Campuspace.git
    ```
       <br>
 
-![image](https://github.com/debangi29/campus-space/assets/117537653/452f15e8-fcff-40f2-aaeb-7bedab300079)
+![image](https://github.com/Salvelop07/Campuspace/assets/117537653/452f15e8-fcff-40f2-aaeb-7bedab300079)
 
 
 3. **Create a New Branch** for your feature or bug fix: Make a separate branch to work on specific features or fixes and switch to the correct branch.
@@ -62,7 +62,7 @@ git commit -m "Describe your changes"
    ```
 6. **Create a Pull Request ✅**: Propose your changes to be merged into the original repository.
    <br>
-![image](https://github.com/debangi29/campus-space/assets/117537653/67412ea9-2a97-44b0-bd94-58b747e6dc05)
+![image](https://github.com/Salvelop07/Campuspace/assets/117537653/67412ea9-2a97-44b0-bd94-58b747e6dc05)
 
 
 ### Development Workflow
@@ -92,13 +92,13 @@ Follow these steps to set up the project locally:
 Clone the project
 
 ```bash
-  git clone https://github.com/sethshivam11/campus-space.git
+  git clone https://github.com/Salvelop07/Campuspace.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd campus-space
+  cd Campuspace
 ```
 
 Install dependencies
@@ -126,7 +126,7 @@ To run this project, you will need to add the following environment variables to
 
 `NODE_ENV`
 
-* [Click Here](https://github.com/sethshivam11/campus-space/blob/master/.env.sample) for Server Side .env.sample file.
+* [Click Here](https://github.com/Salvelop07/Campuspace/blob/master/.env.sample) for Server Side .env.sample file.
 
 > If you want to change the name of the college, image or footer links edit the env.production file in the client folder
 `VITE_COLLEGE_NAME`
@@ -135,16 +135,16 @@ To run this project, you will need to add the following environment variables to
 `VITE_LINKEDIN`
 `VITE_LOGO`
 
-* [Click Here](https://github.com/sethshivam11/campus-space/blob/master/client/.env.sample) for Client Side .env.sample file.
+* [Click Here](https://github.com/Salvelop07/Campuspace/blob/master/client/.env.sample) for Client Side .env.sample file.
 
 
 ## Usage
 
 ### 1. Register a new account or log in with an existing account.
-![image](https://github.com/debangi29/campus-space/assets/117537653/2f3f7af9-9c16-48c3-a6cc-e840602e36af)
+![image](https://github.com/Salvelop07/Campuspace/assets/117537653/2f3f7af9-9c16-48c3-a6cc-e840602e36af)
 
 ### 2. You can get all the details about vacant rooms, Your timetable, Teachers absent, list of classes available at a particular period of time
-![image](https://github.com/debangi29/campus-space/assets/117537653/9ae254e3-98a3-4494-b258-989f9e19c006)
+![image](https://github.com/Salvelop07/Campuspace/assets/117537653/9ae254e3-98a3-4494-b258-989f9e19c006)
 
 
 ### 3. There are more features and various ways to connect.
@@ -177,5 +177,5 @@ To run this project, you will need to add the following environment variables to
 - Spread the word about the project on social media, developer forums, or any relevant community platforms.
 
 
-Thank you for contributing to Campus-Space! Together, we can make a significant impact. Happy coding! 🚀
+Thank you for contributing to Campuspace! Together, we can make a significant impact. Happy coding! 🚀
 ## Don't forget to ⭐ the repository!

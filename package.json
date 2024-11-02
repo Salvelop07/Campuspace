@@ -1,7 +1,7 @@
 {
   "name": "college-project",
   "version": "1.0.0",
-  "description": "Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.",
+  "description": "Campuspace is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.",
   "main": "index.js",
   "scripts": {
     "build": "npm i --include=dev && npx tsc && cd client && npm i --include=dev && npm run build",

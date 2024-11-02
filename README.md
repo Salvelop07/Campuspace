@@ -1,9 +1,7 @@
 <a name="top"></a>
-<center>
-<img src = "https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=F7F7F7&random=false&width=435&lines=Campus+Space"> 
-</center>
+# Campuspace
 
-Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.
+Campuspace is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.
 
 ## 🏅 Featured in 
 
@@ -16,13 +14,13 @@ Campus Space is a MERN stack project with TypeScript & Tailwind CSS. Admins mana
 Clone the project
 
 ```bash
-  git clone https://github.com/sethshivam11/campus-space.git
+  git clone https://github.com/Salvelop07/Campuspace.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd campus-space
+  cd Campuspace
 ```
 
 Install dependencies
@@ -75,7 +73,7 @@ To run this project, you will need to add the following environment variables to
 
 `NODE_ENV`
 
-* [Click Here](https://github.com/sethshivam11/campus-space/blob/master/.env.sample) for Server Side .env.sample file.
+* [Click Here](https://github.com/Salvelop07/Campuspace/blob/master/.env.sample) for Server Side .env.sample file.
 
 > If you want to change the name of the college, image or footer links edit the env.production file in the client folder
 
@@ -85,17 +83,10 @@ To run this project, you will need to add the following environment variables to
 `VITE_LINKEDIN`
 `VITE_LOGO`
 
-* [Click Here](https://github.com/sethshivam11/campus-space/blob/master/client/.env.sample) for Client Side .env.sample file.
+* [Click Here](https://github.com/Salvelop07/Campuspace/blob/master/client/.env.sample) for Client Side .env.sample file.
 
 
 <hr>
 
-<div>
-  <h2 align = "center"><img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png" width="35" height="35">Our Contributors</h2>
-  <div align = "center">
- <h3>Thank you for contributing to our repository</h3>
-
-![Contributors](https://contrib.rocks/image?repo=sethshivam11/campus-space)
-
-### Show some ❤️ by starring this awesome repository!
+### Show some <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Red%20Heart.png" width="35" height="35"> by starring this awesome repository!
 <p align="right"><a href="#top">Back to top</a></p>
