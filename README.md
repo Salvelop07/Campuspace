@@ -1,7 +1,7 @@
 <a name="top"></a>
 # Campuspace
 
-Campuspace is a MERN stack project with TypeScript & Tailwind CSS. Admins manage timetables, teacher absences, & rooms. Students & teachers view timetables, vacant rooms, & teacher absences. Teachers can book rooms for classes. Efficient college resource management.
+Campuspace is a MERN stack project that utilizes TypeScript and Tailwind CSS. 📚✨ Admins can manage timetables, track teacher absences, and oversee room assignments, while students and teachers can view timetables, available rooms, and teacher absences. 🏫
 
 ## 🏅 Featured in 
 
